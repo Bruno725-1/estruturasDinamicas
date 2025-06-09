@@ -8,279 +8,315 @@ namespace AED
     /// Classe utilizada pelas classes CLista, CFila e CPilha
     /// </summary>
 	public class CCelula<T>
-	{
-		public T Item;
-		public CCelula<T> Prox;
+    {
+        public T Item;
+        public CCelula<T> Prox;
 
-		public CCelula()
-		{
-			Item = default(T);
-			Prox = null;
-		}
+        public CCelula()
+        {
+            Item = default(T);
+            Prox = null;
+        }
 
-		public CCelula(T valorItem)
-		{
-			Item = valorItem;
-			Prox = null;
-		}
+        public CCelula(T valorItem)
+        {
+            Item = valorItem;
+            Prox = null;
+        }
 
-		public CCelula(T valorItem, CCelula<T> proxCelula)
-		{
-			Item = valorItem;
-			Prox = proxCelula;
-		}
-	}
+        public CCelula(T valorItem, CCelula<T> proxCelula)
+        {
+            Item = valorItem;
+            Prox = proxCelula;
+        }
+    }
     #endregion
 
     #region Classe CFila - Fila (ou lista FIFO: first-in first-out)
-	public class CFila<T> : IEnumerable<T>
-	{
-		private CCelula<T> Frente;
-		private CCelula<T> Tras;
-		private int Qtde = 0;
+    public class CFila<T> : IEnumerable<T>
+    {
+        private CCelula<T> Frente;
+        private CCelula<T> Tras;
+        private int Qtde = 0;
 
-		public CFila()
-		{
-			Frente = new CCelula<T>();
-			Tras = Frente;
-		}
+        public CFila()
+        {
+            Frente = new CCelula<T>();
+            Tras = Frente;
+        }
 
-		public bool EstaVazia() => Frente == Tras;
+        public bool EstaVazia() => Frente == Tras;
 
-		public void Enfileira(T valorItem)
-		{
-			Tras.Prox = new CCelula<T>(valorItem);
-			Tras = Tras.Prox;
-			Qtde++;
-		}
+        public void Enfileira(T valorItem)
+        {
+            Tras.Prox = new CCelula<T>(valorItem);
+            Tras = Tras.Prox;
+            Qtde++;
+        }
 
-		public T Desenfileira()
-		{
-			if (Frente != Tras)
-			{
-				Frente = Frente.Prox;
-				T item = Frente.Item;
-				Qtde--;
-				return item;
-			}
-			return default(T);
-		}
+        public T Desenfileira()
+        {
+            if (Frente != Tras)
+            {
+                Frente = Frente.Prox;
+                T item = Frente.Item;
+                Qtde--;
+                return item;
+            }
+            return default(T);
+        }
 
-		public T Peek() => Frente != Tras ? Frente.Prox.Item : default(T);
+        public T Peek() => Frente != Tras ? Frente.Prox.Item : default(T);
 
-		public bool Contem(T valorItem)
-		{
-			for (CCelula<T> aux = Frente.Prox; aux != null; aux = aux.Prox)
-				if (EqualityComparer<T>.Default.Equals(aux.Item, valorItem))
-					return true;
-			return false;
-		}
+        public bool Contem(T valorItem)
+        {
+            for (CCelula<T> aux = Frente.Prox; aux != null; aux = aux.Prox)
+                if (EqualityComparer<T>.Default.Equals(aux.Item, valorItem))
+                    return true;
+            return false;
+        }
 
-		public int Quantidade() => Qtde;
+        public int Quantidade() => Qtde;
 
-		public IEnumerator<T> GetEnumerator()
-		{
-			for (var aux = Frente.Prox; aux != null; aux = aux.Prox)
-				yield return aux.Item;
-		}
+        public static CFila<T> ConcatenaFila<T>(CFila<T> F1, CFila<T> F2)
+        {
+            CFila<T> concatenada = new CFila<T>();
+            //percorrer as duas filas até o final
+            for (CCelula<T> aux = F1.Frente.Prox; aux != null; aux = aux.Prox)
+                concatenada.Enfileira(aux.Item);
+            for (CCelula<T> aux = F2.Frente.Prox; aux != null; aux = aux.Prox)
+                concatenada.Enfileira(aux.Item);
+            return concatenada;
+        }
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (var aux = Frente.Prox; aux != null; aux = aux.Prox)
+                yield return aux.Item;
+        }
 
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-	}
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
     #endregion
 
     #region Classe CPilha - CPilha (ou lista LIFO: last-in first-out)
-	public class CPilha<T> : IEnumerable<T>
-	{
-		private CCelula<T> Topo = null;
-		private int Qtde = 0;
+    public class CPilha<T> : IEnumerable<T>
+    {
+        private CCelula<T> Topo = null;
+        private int Qtde = 0;
 
-		public bool EstaVazia() => Topo == null;
+        public bool EstaVazia() => Topo == null;
 
-		public void Empilha(T valorItem)
-		{
-			Topo = new CCelula<T>(valorItem, Topo);
-			Qtde++;
-		}
+        public void Empilha(T valorItem)
+        {
+            Topo = new CCelula<T>(valorItem, Topo);
+            Qtde++;
+        }
 
-		public T Desempilha()
-		{
-			if (Topo != null)
-			{
-				T item = Topo.Item;
-				Topo = Topo.Prox;
-				Qtde--;
-				return item;
-			}
-			return default(T);
-		}
+        public T Desempilha()
+        {
+            if (Topo != null)
+            {
+                T item = Topo.Item;
+                Topo = Topo.Prox;
+                Qtde--;
+                return item;
+            }
+            return default(T);
+        }
 
-		public T Peek() => Topo != null ? Topo.Item : default(T);
+        public T Peek() => Topo != null ? Topo.Item : default(T);
 
-		public bool Contem(T valorItem)
-		{
-			for (var aux = Topo; aux != null; aux = aux.Prox)
-				if (EqualityComparer<T>.Default.Equals(aux.Item, valorItem))
-					return true;
-			return false;
-		}
+        public bool Contem(T valorItem)
+        {
+            for (var aux = Topo; aux != null; aux = aux.Prox)
+                if (EqualityComparer<T>.Default.Equals(aux.Item, valorItem))
+                    return true;
+            return false;
+        }
 
-		public int Quantidade() => Qtde;
+        public int Quantidade() => Qtde;
 
-		public IEnumerator<T> GetEnumerator()
-		{
-			for (var aux = Topo; aux != null; aux = aux.Prox)
-				yield return aux.Item;
-		}
+        public static CPilha<T> ConcatenaPilha<T>(CPilha<T> P1, CPilha<T> P2)
+        {
+            CPilha<T> concatenada = new CPilha<T>();
+            //percorrer as duas pilhas até o final
+            for (CCelula<T> aux = P1.Topo; aux != null; aux = aux.Prox)
+                concatenada.Empilha(aux.Item);
+            for (CCelula<T> aux = P2.Topo; aux != null; aux = aux.Prox)
+                concatenada.Empilha(aux.Item);
+            return concatenada;
+        }
 
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-	}
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (var aux = Topo; aux != null; aux = aux.Prox)
+                yield return aux.Item;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
     #endregion
 
     #region Classe CLista - Lista encadeada (simples) com célula cabeça
-	public class CLista<T> : IEnumerable<T>
-	{
-		private CCelula<T> Primeira;
-		private CCelula<T> Ultima;
-		private int Qtde = 0;
+    public class CLista<T> : IEnumerable<T>
+    {
+        private CCelula<T> Primeira;
+        private CCelula<T> Ultima;
+        private int Qtde = 0;
 
-		public CLista()
-		{
-			Primeira = new CCelula<T>();
-			Ultima = Primeira;
-		}
+        public CLista()
+        {
+            Primeira = new CCelula<T>();
+            Ultima = Primeira;
+        }
 
-		public bool Vazia() => Primeira == Ultima;
+        public bool Vazia() => Primeira == Ultima;
 
-		public void InsereFim(T valorItem)
-		{
-			Ultima.Prox = new CCelula<T>(valorItem);
-			Ultima = Ultima.Prox;
-			Qtde++;
-		}
+        public void InsereFim(T valorItem)
+        {
+            Ultima.Prox = new CCelula<T>(valorItem);
+            Ultima = Ultima.Prox;
+            Qtde++;
+        }
 
-		public void InsereComeco(T valorItem)
-		{
-			Primeira.Prox = new CCelula<T>(valorItem, Primeira.Prox);
-			if (Primeira.Prox.Prox == null)
-				Ultima = Primeira.Prox;
-			Qtde++;
-		}
+        public void InsereComeco(T valorItem)
+        {
+            Primeira.Prox = new CCelula<T>(valorItem, Primeira.Prox);
+            if (Primeira.Prox.Prox == null)
+                Ultima = Primeira.Prox;
+            Qtde++;
+        }
 
-		public bool InsereIndice(T valorItem, int posicao)
-		{
-			if (posicao < 1 || posicao > Qtde + 1) return false;
+        public bool InsereIndice(T valorItem, int posicao)
+        {
+            if (posicao < 1 || posicao > Qtde + 1) return false;
 
-			CCelula<T> aux = Primeira;
-			for (int i = 0; i < posicao - 1; i++)
-				aux = aux.Prox;
+            CCelula<T> aux = Primeira;
+            for (int i = 0; i < posicao - 1; i++)
+                aux = aux.Prox;
 
-			aux.Prox = new CCelula<T>(valorItem, aux.Prox);
-			if (aux.Prox.Prox == null)
-				Ultima = aux.Prox;
-			Qtde++;
-			return true;
-		}
+            aux.Prox = new CCelula<T>(valorItem, aux.Prox);
+            if (aux.Prox.Prox == null)
+                Ultima = aux.Prox;
+            Qtde++;
+            return true;
+        }
 
-		public void InsereAntesDe(T valorItem, T elemento)
-		{
-			if (!Contem(elemento))
-				throw new ArgumentException("Elemento não encontrado");
+        public void RemovePos(int n)
+        {
+            if (n < 1 || n > Qtde)
+                throw new ArgumentException("Índice inválido ou inexistente");
+            CCelula<T> aux = Primeira;
+            for (int i = 0; i < n - 1; i++)
+            {
+                aux = aux.Prox;
+            }
+            aux.Prox = aux.Prox.Prox;
+            if (aux.Prox == null)
+                Ultima = aux;
+            Qtde--;
+        }
 
-			CCelula<T> aux = Primeira;
-			while (!EqualityComparer<T>.Default.Equals(aux.Prox.Item, elemento))
-				aux = aux.Prox;
+        public void InsereAntesDe(T valorItem, T elemento)
+        {
+            if (!Contem(elemento))
+                throw new ArgumentException("Elemento não encontrado");
 
-			aux.Prox = new CCelula<T>(valorItem, aux.Prox);
-			Qtde++;
-		}
+            CCelula<T> aux = Primeira;
+            while (!EqualityComparer<T>.Default.Equals(aux.Prox.Item, elemento))
+                aux = aux.Prox;
 
-		public void InsereDepoisDe(T valorItem, T elemento)
-		{
-			if (!Contem(elemento))
-				throw new ArgumentException("Elemento não encontrado");
+            aux.Prox = new CCelula<T>(valorItem, aux.Prox);
+            Qtde++;
+        }
 
-			CCelula<T> aux = Primeira;
-			while (!EqualityComparer<T>.Default.Equals(aux.Item, elemento))
-				aux = aux.Prox;
+        public void InsereDepoisDe(T valorItem, T elemento)
+        {
+            if (!Contem(elemento))
+                throw new ArgumentException("Elemento não encontrado");
 
-			aux.Prox = new CCelula<T>(valorItem, aux.Prox);
-			Qtde++;
-		}
-		public bool Contem(T valorItem)
-		{
-			for (var aux = Primeira.Prox; aux != null; aux = aux.Prox)
-				if (EqualityComparer<T>.Default.Equals(aux.Item, valorItem))
-					return true;
-			return false;
-		}
+            CCelula<T> aux = Primeira;
+            while (!EqualityComparer<T>.Default.Equals(aux.Item, elemento))
+                aux = aux.Prox;
 
-		public T RetornaIndice(int posicao)
-		{
-			if (posicao < 1 || posicao > Qtde) return default(T);
+            aux.Prox = new CCelula<T>(valorItem, aux.Prox);
+            Qtde++;
+        }
+        public bool Contem(T valorItem)
+        {
+            for (var aux = Primeira.Prox; aux != null; aux = aux.Prox)
+                if (EqualityComparer<T>.Default.Equals(aux.Item, valorItem))
+                    return true;
+            return false;
+        }
 
-			var aux = Primeira.Prox;
-			for (int i = 1; i < posicao; i++)
-				aux = aux.Prox;
-			return aux.Item;
-		}
+        public T RetornaIndice(int posicao)
+        {
+            if (posicao < 1 || posicao > Qtde) return default(T);
 
-		public T RetornaPrimeiro() => Primeira != Ultima ? Primeira.Prox.Item : default(T);
+            var aux = Primeira.Prox;
+            for (int i = 1; i < posicao; i++)
+                aux = aux.Prox;
+            return aux.Item;
+        }
 
-		public T RetornaUltimo() => Primeira != Ultima ? Ultima.Item : default(T);
+        public T RetornaPrimeiro() => Primeira != Ultima ? Primeira.Prox.Item : default(T);
 
-		public T RemoveRetornaComecoSimples()
-		{
-			if (Primeira != Ultima)
-			{
-				Primeira = Primeira.Prox;
-				Qtde--;
-				return Primeira.Item;
-			}
-			return default(T);
-		}
+        public T RetornaUltimo() => Primeira != Ultima ? Ultima.Item : default(T);
 
-		public T RemoveRetornaFim()
-		{
-			if (Primeira == Ultima) return default(T);
+        public T RemoveRetornaComecoSimples()
+        {
+            if (Primeira != Ultima)
+            {
+                Primeira = Primeira.Prox;
+                Qtde--;
+                return Primeira.Item;
+            }
+            return default(T);
+        }
 
-			var aux = Primeira;
-			while (aux.Prox != Ultima)
-				aux = aux.Prox;
+        public T RemoveRetornaFim()
+        {
+            if (Primeira == Ultima) return default(T);
 
-			var removida = Ultima.Item;
-			Ultima = aux;
-			Ultima.Prox = null;
-			Qtde--;
-			return removida;
-		}
+            var aux = Primeira;
+            while (aux.Prox != Ultima)
+                aux = aux.Prox;
 
-		public void Remove(T valorItem)
-		{
-			var aux = Primeira;
-			while (aux.Prox != null)
-			{
-				if (EqualityComparer<T>.Default.Equals(aux.Prox.Item, valorItem))
-				{
-					aux.Prox = aux.Prox.Prox;
-					if (aux.Prox == null)
-						Ultima = aux;
-					Qtde--;
-					return;
-				}
-				aux = aux.Prox;
-			}
-		}
+            var removida = Ultima.Item;
+            Ultima = aux;
+            Ultima.Prox = null;
+            Qtde--;
+            return removida;
+        }
 
-		public int Quantidade() => Qtde;
+        public void Remove(T valorItem)
+        {
+            var aux = Primeira;
+            while (aux.Prox != null)
+            {
+                if (EqualityComparer<T>.Default.Equals(aux.Prox.Item, valorItem))
+                {
+                    aux.Prox = aux.Prox.Prox;
+                    if (aux.Prox == null)
+                        Ultima = aux;
+                    Qtde--;
+                    return;
+                }
+                aux = aux.Prox;
+            }
+        }
 
-		public IEnumerator<T> GetEnumerator()
-		{
-			for (var aux = Primeira.Prox; aux != null; aux = aux.Prox)
-				yield return aux.Item;
-		}
+        public int Quantidade() => Qtde;
 
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-	}
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (var aux = Primeira.Prox; aux != null; aux = aux.Prox)
+                yield return aux.Item;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
 
     #endregion
 
@@ -515,6 +551,34 @@ namespace AED
         public int Quantidade()
         {
             return Qtde;
+        }
+
+        public int primeiraOcorrenciaDe(T elemento)
+        {
+            int indice = 0;
+            for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                indice++;
+                if (EqualityComparer<T>.Default.Equals(aux.Item, elemento)) return indice;
+            }
+            return -1;
+        }
+
+        public int UltimaOcorrenciaDe(T elemento)
+        {
+            int indice = 0, ocorrencia = 0;
+            bool achou = false;
+            for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                indice++;
+                if (EqualityComparer<T>.Default.Equals(aux.Item, elemento))
+                {
+                    achou = true;
+                    ocorrencia = indice; //armazena a posição do elemento se for encontrado
+                }
+            }
+            if (!achou) return -1;
+            return ocorrencia;
         }
 
         public IEnumerator<T> GetEnumerator()
