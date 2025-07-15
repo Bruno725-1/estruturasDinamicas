@@ -4,20 +4,15 @@ class Program
 {
     static void Main(string[] args)
     {
-        CLista<int> lista = new CLista<int>();
+        CFila<int> fila = new CFila<int>();
         for (int i = 1; i <= 10; i++)
-            lista.InsereFim(i);
+            fila.Enfileira(i);
         for (int i = 1; i <= 10; i++)
-            lista.InsereFim(i);
-        Console.WriteLine("Digite o índice a remover");
-        while (true)
-        {
-            int index = int.Parse(Console.ReadLine());
-            if (index == -1) break;
-            lista.RemovePos(index);
-        }
-        Console.WriteLine("Lista após RemovePos:");
-        Console.WriteLine(string.Join(", ", lista));
-        Console.WriteLine(lista.Quantidade());
+            fila.Enfileira(i);
+        Console.WriteLine("Pesquise um trem");
+        int search = int.Parse(Console.ReadLine());
+        int x = fila.OcorrenciasDe(search);
+        Console.WriteLine($"O elemento {search} aparece {x} vezes na fila");
+        Console.WriteLine(fila.Quantidade());
     }
 }

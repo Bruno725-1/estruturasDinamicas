@@ -78,7 +78,7 @@ namespace AED
 
         public int Quantidade() => Qtde;
 
-        public static CFila<T> ConcatenaFila<T>(CFila<T> F1, CFila<T> F2)
+        public static CFila<T> ConcatenaFila<T>(CFila<T> F1, CFila<T> F2) //exercício 5
         {
             CFila<T> concatenada = new CFila<T>();
             //percorrer as duas filas até o final
@@ -87,6 +87,17 @@ namespace AED
             for (CCelula<T> aux = F2.Frente.Prox; aux != null; aux = aux.Prox)
                 concatenada.Enfileira(aux.Item);
             return concatenada;
+        }
+
+        public int OcorrenciasDe(T elemento) //exercício 13
+        {
+            int ocorrencias = 0;
+            for (CCelula<T> aux = Frente.Prox; aux != null; aux = aux.Prox)
+            {
+                if (EqualityComparer<T>.Default.Equals(aux.Item, elemento))
+                    ocorrencias++;
+            }
+            return ocorrencias;
         }
         public IEnumerator<T> GetEnumerator()
         {
@@ -136,7 +147,7 @@ namespace AED
 
         public int Quantidade() => Qtde;
 
-        public static CPilha<T> ConcatenaPilha<T>(CPilha<T> P1, CPilha<T> P2)
+        public static CPilha<T> ConcatenaPilha<T>(CPilha<T> P1, CPilha<T> P2) //exercício 6
         {
             CPilha<T> concatenada = new CPilha<T>();
             //percorrer as duas pilhas até o final
@@ -202,7 +213,7 @@ namespace AED
             return true;
         }
 
-        public void RemovePos(int n)
+        public void RemovePos(int n) //exercício 11
         {
             if (n < 1 || n > Qtde)
                 throw new ArgumentException("Índice inválido ou inexistente");
@@ -217,7 +228,7 @@ namespace AED
             Qtde--;
         }
 
-        public void InsereAntesDe(T valorItem, T elemento)
+        public void InsereAntesDe(T valorItem, T elemento) //exercício 1
         {
             if (!Contem(elemento))
                 throw new ArgumentException("Elemento não encontrado");
@@ -230,7 +241,7 @@ namespace AED
             Qtde++;
         }
 
-        public void InsereDepoisDe(T valorItem, T elemento)
+        public void InsereDepoisDe(T valorItem, T elemento) //exercício 2
         {
             if (!Contem(elemento))
                 throw new ArgumentException("Elemento não encontrado");
@@ -406,6 +417,22 @@ namespace AED
             }
         }
 
+        public void RemovePos(int n) //exercício 12
+        {
+            if (n < 1 || n > Qtde)
+                throw new ArgumentException("Índice inválido ou inexistente");
+            CCelulaDup<T> aux = Primeira;
+            for (int i = 0; i < n - 1; i++)
+            {
+                aux = aux.Prox;
+            }
+            aux.Prox = aux.Prox.Prox;
+            if (aux.Prox != null) //se a célula removida não era a última
+                aux.Prox.Ant = aux;
+            else
+                Ultima = aux; //atualizar ponteiro Ultima
+            Qtde--;
+        }
         public void Imprime()
         {
             CCelulaDup<T> aux = Primeira.Prox;
@@ -553,7 +580,7 @@ namespace AED
             return Qtde;
         }
 
-        public int primeiraOcorrenciaDe(T elemento)
+        public int PrimeiraOcorrenciaDe(T elemento) //exercício 8
         {
             int indice = 0;
             for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
@@ -564,7 +591,7 @@ namespace AED
             return -1;
         }
 
-        public int UltimaOcorrenciaDe(T elemento)
+        public int UltimaOcorrenciaDe(T elemento) //exercício 9
         {
             int indice = 0, ocorrencia = 0;
             bool achou = false;

@@ -23,7 +23,8 @@ T Sample() { } // Retorna um elemento aleatório sem removê-lo da RandomQueue }
 PONTIFÍCIA UNIVERSIDADE CATÓLICA DE MINAS GERAIS Curso: Sistemas de Informação / Tec. Análise e Desenvolvimento de Sistemas Algoritmos e Estruturas de Dados – 1º semestre de 2025 Professor: Rodrigo Richard Gomes 
 Exemplo de uso da classe RandomQueue: 
 RandomQueue RQ = new RandomQueue(); for(int i = 1; i <= 5; i++) 
-RQ.Enqueue(i); System.out.print("Remove e retorna um elemento qualquer = "+RQ.Dequeue()); System.out.print("\nRetorna um elemento sem remover = "+RQ.Sample()); 
+RQ.Enqueue(i);
+System.out.print("Remove e retorna um elemento qualquer = "+RQ.Dequeue()); System.out.print("\nRetorna um elemento sem remover = "+RQ.Sample()); 
 8 – Crie na CListaDup o método int primeiraOcorrenciaDe(T elemento) que busca e retorna o índice da primeira ocorrência do elemento passado por parâmetro. Caso o elemento não exista, sua função deve retornar um valor negativo. Obs: considere que o primeiro elemento está na posição 1. 
 9 – Crie na CListaDup o método int ultimaOcorrenciaDe(T elemento) que busca e retorna o índice da ultima ocorrência do elemento passado por parâmetro. Caso o elemento não exista, sua função deve retornar um valor negativo. Obs: considere que o primeiro elemento está na posição 1. 
 * 
