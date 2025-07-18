@@ -219,9 +219,7 @@ namespace AED
                 throw new ArgumentException("Índice inválido ou inexistente");
             CCelula<T> aux = Primeira;
             for (int i = 0; i < n - 1; i++)
-            {
                 aux = aux.Prox;
-            }
             aux.Prox = aux.Prox.Prox;
             if (aux.Prox == null)
                 Ultima = aux;
@@ -253,6 +251,51 @@ namespace AED
             aux.Prox = new CCelula<T>(valorItem, aux.Prox);
             Qtde++;
         }
+
+        public T[] ParaVetor() //exercício 16
+        {
+            T[] vetor = new T[Qtde];
+            CCelula<T> aux = Primeira.Prox;
+            for (int i = 0; i < vetor.Length; i++)
+            {
+                vetor[i] = aux.Item;
+                aux = aux.Prox;
+            }
+            return vetor;
+        }
+
+        public void BubbleSort()
+        {
+            if (Qtde < 2) return;
+            bool houveTroca = true;
+            while (houveTroca)
+            {
+                houveTroca = false;
+                CCelula<T> atual = Primeira.Prox;
+                while (atual != null && atual.Prox != null)
+                {
+                    if (Comparer<T>.Default.Compare(atual.Item, atual.Prox.Item) > 0)
+                    {
+                        T temp = atual.Item;
+                        atual.Item = atual.Prox.Item;
+                        atual.Prox.Item = temp;
+                        houveTroca = true;
+                    }
+                    atual = atual.Prox;
+                }
+            }
+        }
+
+        public void Imprime()
+        {
+            CCelula<T> aux = Primeira.Prox;
+            while (aux != null)
+            {
+                Console.WriteLine(aux.Item);
+                aux = aux.Prox;
+            }
+        }
+
         public bool Contem(T valorItem)
         {
             for (var aux = Primeira.Prox; aux != null; aux = aux.Prox)

@@ -2,17 +2,18 @@
 using AED;
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        CFila<int> fila = new CFila<int>();
-        for (int i = 1; i <= 10; i++)
-            fila.Enfileira(i);
-        for (int i = 1; i <= 10; i++)
-            fila.Enfileira(i);
-        Console.WriteLine("Pesquise um trem");
-        int search = int.Parse(Console.ReadLine());
-        int x = fila.OcorrenciasDe(search);
-        Console.WriteLine($"O elemento {search} aparece {x} vezes na fila");
-        Console.WriteLine(fila.Quantidade());
+        CLista<int> nomes = new CLista<int>();
+        string linha;
+        Console.WriteLine("Programa iniciado");
+        while ((linha = Console.ReadLine()) != null)
+        {
+            nomes.InsereFim(int.Parse(linha));
+        }
+        nomes.Imprime();
+        nomes.BubbleSort();
+        Console.WriteLine("Lista após ordenação:");
+        nomes.Imprime();
     }
 }
