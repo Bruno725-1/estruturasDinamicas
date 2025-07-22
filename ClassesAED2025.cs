@@ -45,6 +45,30 @@ namespace AED
             Tras = Frente;
         }
 
+        public CFila(T[] vetor) // exercício 21
+        {
+            Frente = new CCelula<T>();
+            Tras = Frente;
+            for (int i = 0; i < vetor.Length; i++)
+            {
+                Tras.Prox = new CCelula<T>(vetor[i]);
+                Tras = Tras.Prox;
+                Qtde++;
+            }
+        }
+
+        public CFila(CFila<T> f) // exercício 23
+        {
+            Frente = new CCelula<T>();
+            Tras = Frente;
+            for (CCelula<T> aux = f.Frente.Prox; aux != null; aux = aux.Prox)
+            {
+                Tras.Prox = new CCelula<T>(aux.Item);
+                Tras = Tras.Prox;
+                Qtde++;
+            }
+        }
+
         public bool EstaVazia() => Frente == Tras;
 
         public void Enfileira(T valorItem)
@@ -179,6 +203,30 @@ namespace AED
         {
             Primeira = new CCelula<T>();
             Ultima = Primeira;
+        }
+
+        public CLista(T[] vetor)
+        {
+            Primeira = new CCelula<T>();
+            Ultima = Primeira;
+            for (int i = 0; i < vetor.Length; i++)
+            {
+                Ultima.Prox = new CCelula<T>(vetor[i]);
+                Ultima = Ultima.Prox;
+                Qtde++;
+            }
+        }
+
+        public CLista(CLista<T> l)
+        {
+            Primeira = new CCelula<T>();
+            Ultima = Primeira;
+            for (CCelula<T> aux = l.Primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                Ultima.Prox = new CCelula<T>(aux.Item);
+                Ultima = Ultima.Prox;
+                Qtde++;
+            }
         }
 
         public bool Vazia() => Primeira == Ultima;

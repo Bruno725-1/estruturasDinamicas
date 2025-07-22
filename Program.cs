@@ -1,19 +1,18 @@
 ﻿using System;
 using AED;
-class Program
-{
-    static void Main()
+class Program {
+    public static void Main(string[] args)
     {
-        CLista<int> nomes = new CLista<int>();
-        string linha;
-        Console.WriteLine("Programa iniciado");
-        while ((linha = Console.ReadLine()) != null)
-        {
-            nomes.InsereFim(int.Parse(linha));
-        }
-        nomes.Imprime();
-        nomes.BubbleSort();
-        Console.WriteLine("Lista após ordenação:");
-        nomes.Imprime();
+        int[] v = new int[20];
+        Random rand = new Random();
+        for (int i = 0; i < v.Length; i++)
+            v[i] = rand.Next(1, 41);
+        Console.WriteLine("Vetor após ser preenchido:");
+        Console.WriteLine(string.Join(", ", v));
+        CLista<int> fila = new CLista<int>(v);
+        Console.WriteLine("Lista criada a partir do vetor:");
+        Console.WriteLine(string.Join(", ", fila));
+        Console.WriteLine(v.Length);
+        Console.WriteLine(fila.Quantidade());
     }
 }

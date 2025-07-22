@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\User\\Documents\\Faculdade\\algoritmos e estruturas de dados\\listas\\estruturasDinamicas\\listaEstudo.csproj",
+      "projectUniqueName": "C:\\Users\\User\\Documents\\Faculdade\\algoritmos e estruturas de dados\\estruturasDinamicas\\listaEstudo.csproj",
       "projectName": "listaEstudo",
-      "projectPath": "C:\\Users\\User\\Documents\\Faculdade\\algoritmos e estruturas de dados\\listas\\estruturasDinamicas\\listaEstudo.csproj",
+      "projectPath": "C:\\Users\\User\\Documents\\Faculdade\\algoritmos e estruturas de dados\\estruturasDinamicas\\listaEstudo.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\User\\Documents\\Faculdade\\algoritmos e estruturas de dados\\listas\\estruturasDinamicas\\obj\\",
+      "outputPath": "C:\\Users\\User\\Documents\\Faculdade\\algoritmos e estruturas de dados\\estruturasDinamicas\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"
