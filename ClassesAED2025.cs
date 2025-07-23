@@ -69,6 +69,14 @@ namespace AED
             }
         }
 
+        public CFila(CPilha<T> p) // exercício 22
+        {
+            Frente = new CCelula<T>();
+            Tras = Frente;
+            foreach(T item in p)
+                Enfileira(item);
+        }
+
         public bool EstaVazia() => Frente == Tras;
 
         public void Enfileira(T valorItem)
