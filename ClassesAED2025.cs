@@ -312,7 +312,7 @@ namespace AED
             return vetor;
         }
 
-        public void BubbleSort()
+        public void Ordenar()
         {
             if (Qtde < 2) return;
             bool houveTroca = true;
@@ -471,9 +471,67 @@ namespace AED
             Ultima = Primeira;
         }
 
+        public CListaDup(CListaDup<T> l)
+        {
+            Primeira = new CCelulaDup<T>();
+            Ultima = Primeira;
+            for (CCelulaDup<T> aux = l.Primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                Ultima.Prox = new CCelulaDup<T>(aux.Item, Ultima, null);
+                Ultima = Ultima.Prox;
+                Qtde++;
+            }
+        }
+
+        public CListaDup(T[] vetor)
+        {
+            Primeira = new CCelulaDup<T>();
+            Ultima = Primeira;
+            for (int i = 0; i < vetor.Length; i++)
+            {
+                Ultima.Prox = new CCelulaDup<T>(vetor[i], Ultima, null);
+                Ultima = Ultima.Prox;
+                Qtde++;
+            }
+        }
+
         public bool Vazia()
         {
             return Primeira == Ultima;
+        }
+
+        public T[] ParaVetor()
+        {
+            T[] vetor = new T[Qtde];
+            CCelulaDup<T> aux = Primeira.Prox;
+            for (int i = 0; i < vetor.Length; i++)
+            {
+                vetor[i] = aux.Item;
+                aux = aux.Prox;
+            }
+            return vetor;
+        }
+
+        public void Ordenar()
+        {
+            if (Qtde < 2) return;
+            bool houveTroca = true;
+            while (houveTroca)
+            {
+                houveTroca = false;
+                CCelulaDup<T> atual = Primeira.Prox;
+                while (atual != null && atual.Prox != null)
+                {
+                    if (Comparer<T>.Default.Compare(atual.Item, atual.Prox.Item) > 0)
+                    {
+                        T temp = atual.Item;
+                        atual.Item = atual.Prox.Item;
+                        atual.Prox.Item = temp;
+                        houveTroca = true;
+                    }
+                    atual = atual.Prox;
+                }
+            }
         }
 
         public void InsereFim(T valorItem)
