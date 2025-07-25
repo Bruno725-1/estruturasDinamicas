@@ -73,7 +73,7 @@ namespace AED
         {
             Frente = new CCelula<T>();
             Tras = Frente;
-            foreach(T item in p)
+            foreach (T item in p)
                 Enfileira(item);
         }
 
@@ -780,6 +780,71 @@ namespace AED
                 for (CCelulaDup<T> aux = Ultima; aux != Primeira; aux = aux.Ant)
                     yield return aux.Item;
             }
+        }
+    }
+    #endregion
+
+    #region Classe CCelulaDic - Célula que será utilizada pelo CDicionario
+    /// < summary>
+    /// Classe utilizada pela classe CDicionario
+    /// </summary>
+    public class CCelulaDic<TChave, TValor>
+    {
+        public TChave Chave;
+        public TValor Valor;
+        public CCelulaDic<TChave, TValor> Prox;
+        public CCelulaDic()
+        {
+            Chave = default(TChave);
+            Valor = default(TValor);
+            Prox = null;
+        }
+
+        public CCelulaDic(TChave key, TValor value)
+        {
+            Chave = key;
+            Valor = value;
+            Prox = null;
+        }
+
+        public CCelulaDic(TChave key, TValor value, CCelulaDic<TChave, TValor> proxCelula)
+        {
+            Chave = key;
+            Valor = value;
+            Prox = proxCelula;
+        }
+    }
+    #endregion
+
+    #region Classe CDicionario, implementa um dicionário chave e valor
+    public class CDicionario<TChave, TValor>
+    {
+        private CCelulaDic<TChave, TValor> Primeira;
+        private CCelulaDic<TChave, TValor> Ultima;
+        public CDicionario()
+        {
+            Primeira = new CCelulaDic<TChave, TValor>();
+            Ultima = Primeira;
+        }
+
+        public bool Vazio() => Primeira == Ultima;
+
+        public void Adiciona(TChave key, TValor value)
+        {
+            Ultima.Prox = new CCelulaDic<TChave, TValor>(key, value);
+            Ultima = Ultima.Prox;
+        }
+
+        public TValor RetornaValor(TChave key)
+        {
+            CCelulaDic<TChave, TValor> aux = Primeira.Prox;
+            while (aux != null)
+            {
+                if (EqualityComparer<TChave>.Default.Equals(aux.Chave, key))
+                    return aux.Valor;
+                aux = aux.Prox;
+            }
+            return default(TValor);
         }
     }
     #endregion
