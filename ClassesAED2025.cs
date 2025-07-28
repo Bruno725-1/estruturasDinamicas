@@ -831,6 +831,15 @@ namespace AED
 
         public void Adiciona(TChave key, TValor value)
         {
+            //percorrer todo o dicionário para verificar se a chave passada como argumento já existe
+            var aux = Primeira.Prox;
+            while (aux != null)
+            {
+                if (EqualityComparer<TChave>.Default.Equals(aux.Chave, key))
+                    throw new ArgumentException("A chave passada por parâmetro já existe");
+                aux = aux.Prox;
+            }
+            //se chegou aqui, é porque a chave não existe
             Ultima.Prox = new CCelulaDic<TChave, TValor>(key, value);
             Ultima = Ultima.Prox;
         }
@@ -845,6 +854,30 @@ namespace AED
                 aux = aux.Prox;
             }
             return default(TValor);
+        }
+
+        public bool ContemChave(TChave key)
+        {
+            CCelulaDic<TChave, TValor> aux = Primeira.Prox;
+            bool achou = false;
+            while (aux != null && !achou)
+            {
+                achou = EqualityComparer<TChave>.Default.Equals(aux.Chave, key);
+                aux = aux.Prox;
+            }
+            return achou;
+        }
+
+        public bool ContemValor(TValor value)
+        {
+            CCelulaDic<TChave, TValor> aux = Primeira.Prox;
+            bool achou = false;
+            while (aux != null && !achou)
+            {
+                achou = EqualityComparer<TValor>.Default.Equals(aux.Valor, value);
+                aux = aux.Prox;
+            }
+            return achou;
         }
     }
     #endregion
