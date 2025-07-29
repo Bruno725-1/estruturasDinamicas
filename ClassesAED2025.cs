@@ -821,6 +821,7 @@ namespace AED
     {
         private CCelulaDic<TChave, TValor> Primeira;
         private CCelulaDic<TChave, TValor> Ultima;
+        private int Qtde = 0;
         public CDicionario()
         {
             Primeira = new CCelulaDic<TChave, TValor>();
@@ -842,6 +843,24 @@ namespace AED
             //se chegou aqui, é porque a chave não existe
             Ultima.Prox = new CCelulaDic<TChave, TValor>(key, value);
             Ultima = Ultima.Prox;
+            Qtde++;
+        }
+
+        public void Remove(TChave key)
+        {
+            CCelulaDic<TChave, TValor> aux = Primeira;
+            while (aux.Prox != null)
+            {
+                if (EqualityComparer<TChave>.Default.Equals(aux.Prox.Chave, key))
+                {
+                    aux.Prox = aux.Prox.Prox;
+                    if (aux.Prox == null)
+                        Ultima = aux;
+                    Qtde--;
+                    return;
+                }
+                aux = aux.Prox;
+            }
         }
 
         public TValor RetornaValor(TChave key)
@@ -855,6 +874,46 @@ namespace AED
             }
             return default(TValor);
         }
+
+        public void InsereValor(TChave key, TValor value)
+        {
+            var aux = Primeira.Prox;
+            while (aux != null)
+            {
+                if (EqualityComparer<TChave>.Default.Equals(aux.Chave, key))
+                {
+                    aux.Valor = value;
+                    return;
+                }
+                aux = aux.Prox;
+            }
+        }
+
+        public TChave[] Chaves()
+        {
+            TChave[] vetor = new TChave[Qtde];
+            var aux = Primeira.Prox;
+            for (int i = 0; i < vetor.Length; i++)
+            {
+                vetor[i] = aux.Chave;
+                aux = aux.Prox;
+            }
+            return vetor;
+        }
+
+        public TValor[] Valores()
+        {
+            TValor[] vetor = new TValor[Qtde];
+            var aux = Primeira.Prox;
+            for (int i = 0; i < vetor.Length; i++)
+            {
+                vetor[i] = aux.Valor;
+                aux = aux.Prox;
+            }
+            return vetor;
+        }
+
+        public int Quantidade() => Qtde;
 
         public bool ContemChave(TChave key)
         {
