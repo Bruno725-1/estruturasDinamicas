@@ -110,14 +110,22 @@ namespace AED
 
         public int Quantidade() => Qtde;
 
-        public static CFila<T> ConcatenaFila<T>(CFila<T> F1, CFila<T> F2) //exercício 5
+        public static CFila<T> ConcatenaFila(CFila<T> F1, CFila<T> F2) //exercício 5
         {
             CFila<T> concatenada = new CFila<T>();
             //percorrer as duas filas até o final
             for (CCelula<T> aux = F1.Frente.Prox; aux != null; aux = aux.Prox)
-                concatenada.Enfileira(aux.Item);
+            {
+                concatenada.Tras.Prox = new CCelula<T>(aux.Item);
+                concatenada.Tras = concatenada.Tras.Prox;
+                concatenada.Qtde++;
+            }
             for (CCelula<T> aux = F2.Frente.Prox; aux != null; aux = aux.Prox)
-                concatenada.Enfileira(aux.Item);
+            {
+                concatenada.Tras.Prox = new CCelula<T>(aux.Item);
+                concatenada.Tras = concatenada.Tras.Prox;
+                concatenada.Qtde++;
+            }
             return concatenada;
         }
 
@@ -131,6 +139,18 @@ namespace AED
             }
             return ocorrencias;
         }
+
+        public void Limpar()
+        {
+            if (Frente == Tras) return;
+            while (Frente.Prox != null)
+            {
+                Frente.Prox = Frente.Prox.Prox;
+                Qtde--;
+            }
+            Tras = Frente;
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             for (var aux = Frente.Prox; aux != null; aux = aux.Prox)
@@ -179,15 +199,31 @@ namespace AED
 
         public int Quantidade() => Qtde;
 
-        public static CPilha<T> ConcatenaPilha<T>(CPilha<T> P1, CPilha<T> P2) //exercício 6
+        public static CPilha<T> ConcatenaPilha(CPilha<T> P1, CPilha<T> P2) //exercício 6
         {
             CPilha<T> concatenada = new CPilha<T>();
             //percorrer as duas pilhas até o final
             for (CCelula<T> aux = P1.Topo; aux != null; aux = aux.Prox)
-                concatenada.Empilha(aux.Item);
+            {
+                concatenada.Topo = new CCelula<T>(aux.Item, concatenada.Topo);
+                concatenada.Qtde++;
+            }
             for (CCelula<T> aux = P2.Topo; aux != null; aux = aux.Prox)
-                concatenada.Empilha(aux.Item);
+            {
+                concatenada.Topo = new CCelula<T>(aux.Item, concatenada.Topo);
+                concatenada.Qtde++;
+            }
             return concatenada;
+        }
+
+        public void Limpar()
+        {
+            if (Topo == null) return;
+            while (Topo != null)
+            {
+                Topo = Topo.Prox;
+                Qtde--;
+            }
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -415,6 +451,17 @@ namespace AED
                 }
                 aux = aux.Prox;
             }
+        }
+
+        public void Limpar() //exercício 20
+        {
+            if (Primeira == Ultima) return;
+            while (Primeira.Prox != null)
+            {
+                Primeira.Prox = Primeira.Prox.Prox;
+                Qtde--;
+            }
+            Ultima = Primeira;
         }
 
         public int Quantidade() => Qtde;
@@ -765,6 +812,22 @@ namespace AED
             return ocorrencia;
         }
 
+        public void Limpar()
+        {
+            if (Primeira == Ultima) return;
+            CCelulaDup<T> atual = Primeira.Prox;
+            while (atual != null)
+            {
+                CCelulaDup<T> proxima = atual.Prox;
+                atual.Ant = null;
+                atual.Prox = null;
+                atual = proxima;
+                Qtde--;
+            }
+            Primeira.Prox = null;
+            Ultima = Primeira;
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
@@ -937,6 +1000,17 @@ namespace AED
                 aux = aux.Prox;
             }
             return achou;
+        }
+
+        public void Limpar()
+        {
+            if (Primeira == Ultima) return;
+            while (Primeira.Prox != null)
+            {
+                Primeira.Prox = Primeira.Prox.Prox;
+                Qtde--;
+            }
+            Ultima = Primeira;
         }
     }
     #endregion
