@@ -320,28 +320,31 @@ namespace AED
 
         public void InsereAntesDe(T valorItem, T elemento) //exercício 1
         {
-            if (!Contem(elemento))
-                throw new ArgumentException("Elemento não encontrado");
-
-            CCelula<T> aux = Primeira;
-            while (!EqualityComparer<T>.Default.Equals(aux.Prox.Item, elemento))
-                aux = aux.Prox;
-
-            aux.Prox = new CCelula<T>(valorItem, aux.Prox);
-            Qtde++;
+            for (CCelula<T> aux = Primeira; aux.Prox != null; aux = aux.Prox)
+            {
+                if (EqualityComparer<T>.Default.Equals(aux.Prox.Item, elemento))
+                {
+                    aux.Prox = new CCelula<T>(valorItem, aux.Prox);
+                    Qtde++;
+                    return;
+                }
+            }
+            //se percorreu todo o loop, é porque o elemento antes do qual o item seria adicionado não foi encontrado
+            throw new ArgumentException("Elemento não encontrado");
         }
 
         public void InsereDepoisDe(T valorItem, T elemento) //exercício 2
         {
-            if (!Contem(elemento))
-                throw new ArgumentException("Elemento não encontrado");
-
-            CCelula<T> aux = Primeira;
-            while (!EqualityComparer<T>.Default.Equals(aux.Item, elemento))
-                aux = aux.Prox;
-
-            aux.Prox = new CCelula<T>(valorItem, aux.Prox);
-            Qtde++;
+            for (CCelula<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                if (EqualityComparer<T>.Default.Equals(aux.Item, elemento))
+                {
+                    aux.Prox = new CCelula<T>(valorItem, aux.Prox);
+                    Qtde++;
+                    return;
+                }
+            }
+            throw new ArgumentException("Elemento não encontrado");
         }
 
         public T[] ParaVetor() //exercício 16
@@ -465,6 +468,23 @@ namespace AED
         }
 
         public int Quantidade() => Qtde;
+
+        public void Inverte()
+        {
+            T[] vet = new T[Qtde];
+            CCelula<T> aux = Primeira.Prox;
+            for (int i = 0; i < Qtde; i++)
+            {
+                vet[i] = aux.Item;
+                aux = aux.Prox;
+            }
+            aux = Primeira.Prox;
+            for (int i = Qtde - 1; i >= 0; i--)
+            {
+                aux.Item = vet[i];
+                aux = aux.Prox;
+            }
+        }
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -828,6 +848,23 @@ namespace AED
             Ultima = Primeira;
         }
 
+                public void Inverte()
+        {
+            T[] vet = new T[Qtde];
+            CCelulaDup<T> aux = Primeira.Prox;
+            for (int i = 0; i < Qtde; i++)
+            {
+                vet[i] = aux.Item;
+                aux = aux.Prox;
+            }
+            aux = Primeira.Prox;
+            for (int i = Qtde - 1; i >= 0; i--)
+            {
+                aux.Item = vet[i];
+                aux = aux.Prox;
+            }
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
@@ -891,6 +928,18 @@ namespace AED
             Ultima = Primeira;
         }
 
+        public CDicionario(CDicionario<TChave, TValor> d)
+        {
+            Primeira = new CCelulaDic<TChave, TValor>();
+            Ultima = Primeira;
+            for (var aux = d.Primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                Ultima.Prox = new CCelulaDic<TChave, TValor>(aux.Chave, aux.Valor);
+                Ultima = Ultima.Prox;
+                Qtde++;
+            }
+        }
+
         public bool Vazio() => Primeira == Ultima;
 
         public void Adiciona(TChave key, TValor value)
@@ -950,6 +999,8 @@ namespace AED
                 }
                 aux = aux.Prox;
             }
+            //se percorreu todo o loop, é porque a chave passada por parâmetro não foi encontrada
+            throw new ArgumentException("A chave passada por parâmetro não foi encontrada");
         }
 
         public TChave[] Chaves()
