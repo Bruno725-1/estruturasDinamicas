@@ -359,6 +359,34 @@ namespace AED
             return vetor;
         }
 
+        public int PrimeiraOcorrenciaDe(T elemento)
+        {
+            int indice = 1;
+            for (CCelula<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                if (EqualityComparer<T>.Default.Equals(aux.Item, elemento)) return indice;
+                indice++;
+            }
+            return -1;
+        }
+
+        public int UltimaOcorrenciaDe(T elemento)
+        {
+            int indice = 1, ocorrencia = 0;
+            bool achou = false;
+            for (CCelula<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                if (EqualityComparer<T>.Default.Equals(aux.Item, elemento))
+                {
+                    achou = true;
+                    ocorrencia = indice; //armazena a posição do elemento se for encontrado
+                }
+                indice++;
+            }
+            if (!achou) return -1;
+            return ocorrencia;
+        }
+
         public void Ordenar()
         {
             if (Qtde < 2) return;
@@ -407,6 +435,16 @@ namespace AED
             for (int i = 1; i < posicao; i++)
                 aux = aux.Prox;
             return aux.Item;
+        }
+
+        public void AlteraIndice(int posicao, T elemento)
+        {
+            if (posicao < 1 || posicao > Qtde)
+                throw new ArgumentException("Índice inválido ou inexistente");
+            var aux = Primeira.Prox;
+            for (int i = 1; i < posicao; i++)
+                aux = aux.Prox;
+            aux.Item = elemento;
         }
 
         public T RetornaPrimeiro() => Primeira != Ultima ? Primeira.Prox.Item : default(T);
@@ -657,17 +695,8 @@ namespace AED
                 Ultima = aux; //atualizar ponteiro Ultima
             Qtde--;
         }
-        public void Imprime()
-        {
-            CCelulaDup<T> aux = Primeira.Prox;
-            while (aux != null)
-            {
-                Console.WriteLine(aux.Item);
-                aux = aux.Prox;
-            }
-        }
 
-        public void ImprimeFor()
+        public void Imprime()
         {
             for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
                 Console.WriteLine(aux.Item);
@@ -675,33 +704,11 @@ namespace AED
 
         public void ImprimeInv()
         {
-            CCelulaDup<T> aux = Ultima;
-            while (aux.Ant != null)
-            {
-                Console.WriteLine(aux.Item);
-                aux = aux.Ant;
-            }
-        }
-
-        public void ImprimeInvFor()
-        {
             for (CCelulaDup<T> aux = Ultima; aux.Ant != null; aux = aux.Ant)
                 Console.WriteLine(aux.Item);
         }
 
         public bool Contem(T elemento)
-        {
-            bool achou = false;
-            CCelulaDup<T> aux = Primeira.Prox;
-            while (aux != null && !achou)
-            {
-                achou = EqualityComparer<T>.Default.Equals(aux.Item, elemento);
-                aux = aux.Prox;
-            }
-            return achou;
-        }
-
-        public bool ContemFor(T elemento)
         {
             bool achou = false;
             for (CCelulaDup<T> aux = Primeira.Prox; aux != null && !achou; aux = aux.Prox)
@@ -806,30 +813,40 @@ namespace AED
 
         public int PrimeiraOcorrenciaDe(T elemento) //exercício 8
         {
-            int indice = 0;
+            int indice = 1;
             for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
             {
-                indice++;
                 if (EqualityComparer<T>.Default.Equals(aux.Item, elemento)) return indice;
+                indice++;
             }
             return -1;
         }
 
         public int UltimaOcorrenciaDe(T elemento) //exercício 9
         {
-            int indice = 0, ocorrencia = 0;
+            int indice = 1, ocorrencia = 0;
             bool achou = false;
             for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
             {
-                indice++;
                 if (EqualityComparer<T>.Default.Equals(aux.Item, elemento))
                 {
                     achou = true;
                     ocorrencia = indice; //armazena a posição do elemento se for encontrado
                 }
+                indice++;
             }
             if (!achou) return -1;
             return ocorrencia;
+        }
+
+        public void AlteraIndice(int posicao, T elemento)
+        {
+            if (posicao < 1 || posicao > Qtde)
+                throw new ArgumentException("Índice inválido ou inexistente");
+            var aux = Primeira.Prox;
+            for (int i = 1; i < posicao; i++)
+                aux = aux.Prox;
+            aux.Item = elemento;
         }
 
         public void Limpar()
@@ -848,7 +865,7 @@ namespace AED
             Ultima = Primeira;
         }
 
-                public void Inverte()
+        public void Inverte()
         {
             T[] vet = new T[Qtde];
             CCelulaDup<T> aux = Primeira.Prox;
