@@ -1070,6 +1070,29 @@ namespace AED
             return achou;
         }
 
+        public void Ordenar() //implementa um método de ordenação por chaves
+        {
+            if (Qtde < 2) return;
+            bool houveTroca = true;
+            while (houveTroca)
+            {
+                houveTroca = false;
+                for (var atual = Primeira.Prox; atual != null && atual.Prox != null; atual = atual.Prox)
+                {
+                    if (Comparer<TChave>.Default.Compare(atual.Chave, atual.Prox.Chave) > 0)
+                    {
+                        TChave cTemp = atual.Chave;
+                        TValor vTemp = atual.Valor;
+                        atual.Chave = atual.Prox.Chave;
+                        atual.Valor = atual.Prox.Valor;
+                        atual.Prox.Chave = cTemp;
+                        atual.Prox.Valor = vTemp;
+                        houveTroca = true;
+                    }
+                }
+            }
+        }
+
         public void Limpar()
         {
             if (Primeira == Ultima) return;
