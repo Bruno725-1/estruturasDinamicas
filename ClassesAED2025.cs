@@ -419,6 +419,23 @@ namespace AED
             }
         }
 
+        public void ImprimeInv()
+        {
+            ImprimeInv(Primeira.Prox);
+        }
+
+        ///<summary>
+        /// Implementação de um método recursivo que imprime a lista de forma inversa. O método é chamado, verifica se aux é diferente de null. Se for, chama o método novamente e após isso, o item será impresso na tela. Como consequência, a impressão dos elementos ocorrerá no desmanche da pilha de registros de ativação
+        ///</summary>
+        public void ImprimeInv(CCelula<T> aux)
+        {
+            if (aux != null)
+            {
+                ImprimeInv(aux.Prox);
+                Console.WriteLine(aux.Item);
+            }
+        }
+
         public bool Contem(T valorItem)
         {
             for (var aux = Primeira.Prox; aux != null; aux = aux.Prox)
