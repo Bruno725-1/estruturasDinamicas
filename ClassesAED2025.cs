@@ -421,7 +421,8 @@ namespace AED
 
         public void ImprimeInv()
         {
-            ImprimeInv(Primeira.Prox);
+            if(Primeira.Prox != null)//se a lista não estiver vazia
+                ImprimeInv(Primeira.Prox);
         }
 
         ///<summary>
