@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace AED
 {
@@ -7,7 +8,7 @@ namespace AED
     /// <summary>
     /// Classe utilizada pelas classes CLista, CFila e CPilha
     /// </summary>
-	public class CCelula<T>
+    public class CCelula<T>
     {
         public T Item;
         public CCelula<T> Prox;
@@ -45,7 +46,7 @@ namespace AED
             Tras = Frente;
         }
 
-        public CFila(T[] vetor) // exercício 21
+        public CFila(T[] vetor)
         {
             Frente = new CCelula<T>();
             Tras = Frente;
@@ -57,7 +58,7 @@ namespace AED
             }
         }
 
-        public CFila(CFila<T> f) // exercício 23
+        public CFila(CFila<T> f)
         {
             Frente = new CCelula<T>();
             Tras = Frente;
@@ -69,7 +70,7 @@ namespace AED
             }
         }
 
-        public CFila(CPilha<T> p) // exercício 22
+        public CFila(CPilha<T> p)
         {
             Frente = new CCelula<T>();
             Tras = Frente;
@@ -110,7 +111,7 @@ namespace AED
 
         public int Quantidade() => Qtde;
 
-        public static CFila<T> ConcatenaFila(CFila<T> F1, CFila<T> F2) //exercício 5
+        public static CFila<T> ConcatenaFila(CFila<T> F1, CFila<T> F2)
         {
             CFila<T> concatenada = new CFila<T>();
             //percorrer as duas filas até o final
@@ -129,7 +130,7 @@ namespace AED
             return concatenada;
         }
 
-        public int OcorrenciasDe(T elemento) //exercício 13
+        public int OcorrenciasDe(T elemento)
         {
             int ocorrencias = 0;
             for (CCelula<T> aux = Frente.Prox; aux != null; aux = aux.Prox)
@@ -199,7 +200,7 @@ namespace AED
 
         public int Quantidade() => Qtde;
 
-        public static CPilha<T> ConcatenaPilha(CPilha<T> P1, CPilha<T> P2) //exercício 6
+        public static CPilha<T> ConcatenaPilha(CPilha<T> P1, CPilha<T> P2)
         {
             CPilha<T> concatenada = new CPilha<T>();
             //percorrer as duas pilhas até o final
@@ -305,7 +306,7 @@ namespace AED
             return true;
         }
 
-        public void RemovePos(int n) //exercício 11
+        public void RemovePos(int n)
         {
             if (n < 1 || n > Qtde)
                 throw new ArgumentException("Índice inválido ou inexistente");
@@ -318,7 +319,7 @@ namespace AED
             Qtde--;
         }
 
-        public void InsereAntesDe(T valorItem, T elemento) //exercício 1
+        public void InsereAntesDe(T valorItem, T elemento)
         {
             for (CCelula<T> aux = Primeira; aux.Prox != null; aux = aux.Prox)
             {
@@ -333,7 +334,7 @@ namespace AED
             throw new ArgumentException("Elemento não encontrado");
         }
 
-        public void InsereDepoisDe(T valorItem, T elemento) //exercício 2
+        public void InsereDepoisDe(T valorItem, T elemento)
         {
             for (CCelula<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
             {
@@ -347,7 +348,7 @@ namespace AED
             throw new ArgumentException("Elemento não encontrado");
         }
 
-        public T[] ParaVetor() //exercício 16
+        public T[] ParaVetor()
         {
             T[] vetor = new T[Qtde];
             CCelula<T> aux = Primeira.Prox;
@@ -512,7 +513,7 @@ namespace AED
             }
         }
 
-        public void Limpar() //exercício 20
+        public void Limpar()
         {
             if (Primeira == Ultima) return;
             while (Primeira.Prox != null)
@@ -697,7 +698,7 @@ namespace AED
             }
         }
 
-        public void RemovePos(int n) //exercício 12
+        public void RemovePos(int n)
         {
             if (n < 1 || n > Qtde)
                 throw new ArgumentException("Índice inválido ou inexistente");
@@ -829,7 +830,7 @@ namespace AED
             return Qtde;
         }
 
-        public int PrimeiraOcorrenciaDe(T elemento) //exercício 8
+        public int PrimeiraOcorrenciaDe(T elemento)
         {
             int indice = 1;
             for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
@@ -840,7 +841,7 @@ namespace AED
             return -1;
         }
 
-        public int UltimaOcorrenciaDe(T elemento) //exercício 9
+        public int UltimaOcorrenciaDe(T elemento)
         {
             int indice = 1, ocorrencia = 0;
             bool achou = false;
@@ -885,18 +886,19 @@ namespace AED
 
         public void Inverte()
         {
-            T[] vet = new T[Qtde];
-            CCelulaDup<T> aux = Primeira.Prox;
-            for (int i = 0; i < Qtde; i++)
+            int inicio = 1;
+            int fim = Qtde;
+            CCelulaDup<T> inicial = Primeira.Prox;
+            CCelulaDup<T> final = Ultima;
+            while(inicio<fim)
             {
-                vet[i] = aux.Item;
-                aux = aux.Prox;
-            }
-            aux = Primeira.Prox;
-            for (int i = Qtde - 1; i >= 0; i--)
-            {
-                aux.Item = vet[i];
-                aux = aux.Prox;
+                T temp = inicial.Item;
+                inicial.Item = final.Item;
+                final.Item = temp;
+                inicial = inicial.Prox;
+                final = final.Ant;
+                inicio++;
+                fim--;
             }
         }
 
@@ -908,14 +910,6 @@ namespace AED
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public IEnumerable<T> Reverse
-        {
-            get
-            {
-                for (CCelulaDup<T> aux = Ultima; aux != Primeira; aux = aux.Ant)
-                    yield return aux.Item;
-            }
-        }
     }
     #endregion
 
@@ -951,8 +945,8 @@ namespace AED
     }
     #endregion
 
-    #region Classe CDicionario, implementa um dicionário chave e valor
-    public class CDicionario<TChave, TValor>
+    #region Classe CDicionario - implementa um dicionário chave e valor
+    public class CDicionario<TChave, TValor> : IEnumerable<CPar<TChave, TValor>>
     {
         private CCelulaDic<TChave, TValor> Primeira;
         private CCelulaDic<TChave, TValor> Ultima;
@@ -1120,6 +1114,28 @@ namespace AED
                 Qtde--;
             }
             Ultima = Primeira;
+        }
+
+        public IEnumerator<CPar<TChave, TValor>> GetEnumerator()
+        {
+            for (CCelulaDic<TChave, TValor> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+                yield return new CPar<TChave, TValor>(aux.Chave, aux.Valor);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+    #endregion
+
+    #region Classe CPar - possibilita a iteração em um dicionário com foreach
+    public class CPar<C, V>
+    {
+        public C Chave { get; }
+        public V Valor { get; }
+
+        public CPar(C chave, V valor)
+        {
+            Chave = chave;
+            Valor = valor;
         }
     }
     #endregion
