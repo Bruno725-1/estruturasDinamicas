@@ -274,9 +274,9 @@ namespace AED
             }
         }
 
-        public bool Vazia() => Primeira == Ultima;
+        public bool EstaVazia() => Primeira == Ultima;
 
-        public void InsereFim(T valorItem)
+        public void Adiciona(T valorItem)
         {
             Ultima.Prox = new CCelula<T>(valorItem);
             Ultima = Ultima.Prox;
@@ -306,7 +306,7 @@ namespace AED
             return true;
         }
 
-        public void RemovePos(int n)
+        public void RemoveIndice(int n)
         {
             if (n < 1 || n > Qtde)
                 throw new ArgumentException("Índice inválido ou inexistente");
@@ -319,13 +319,13 @@ namespace AED
             Qtde--;
         }
 
-        public void InsereAntesDe(T valorItem, T elemento)
+        public void InsereAntesDe(T elementoAInserir, T referencia)
         {
             for (CCelula<T> aux = Primeira; aux.Prox != null; aux = aux.Prox)
             {
-                if (EqualityComparer<T>.Default.Equals(aux.Prox.Item, elemento))
+                if (EqualityComparer<T>.Default.Equals(aux.Prox.Item, referencia))
                 {
-                    aux.Prox = new CCelula<T>(valorItem, aux.Prox);
+                    aux.Prox = new CCelula<T>(elementoAInserir, aux.Prox);
                     Qtde++;
                     return;
                 }
@@ -334,13 +334,13 @@ namespace AED
             throw new ArgumentException("Elemento não encontrado");
         }
 
-        public void InsereDepoisDe(T valorItem, T elemento)
+        public void InsereDepoisDe(T elementoAInserir, T referencia)
         {
             for (CCelula<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
             {
-                if (EqualityComparer<T>.Default.Equals(aux.Item, elemento))
+                if (EqualityComparer<T>.Default.Equals(aux.Item, referencia))
                 {
-                    aux.Prox = new CCelula<T>(valorItem, aux.Prox);
+                    aux.Prox = new CCelula<T>(elementoAInserir, aux.Prox);
                     Qtde++;
                     return;
                 }
@@ -427,7 +427,10 @@ namespace AED
         }
 
         ///<summary>
-        /// Implementação de um método recursivo que imprime a lista de forma inversa. O método é chamado, verifica se aux é diferente de null. Se for, chama o método novamente e após isso, o item será impresso na tela. Como consequência, a impressão dos elementos ocorrerá no desmanche da pilha de registros de ativação
+        /// Implementação de um método recursivo que imprime a lista de forma inversa.
+        /// O método é chamado, verifica se aux é diferente de null.
+        /// Se for, chama o método novamente e após isso, o item será impresso na tela.
+        /// Como consequência, a impressão dos elementos ocorrerá no desmanche da pilha de registros de ativação.
         ///</summary>
         public void ImprimeInv(CCelula<T> aux)
         {
@@ -627,10 +630,7 @@ namespace AED
             }
         }
 
-        public bool Vazia()
-        {
-            return Primeira == Ultima;
-        }
+        public bool EstaVazia() => Primeira == Ultima;
 
         public T[] ParaVetor()
         {
@@ -666,7 +666,7 @@ namespace AED
             }
         }
 
-        public void InsereFim(T valorItem)
+        public void Adiciona(T valorItem)
         {
             Ultima.Prox = new CCelulaDup<T>(valorItem, Ultima, null);
             Ultima = Ultima.Prox;
@@ -698,7 +698,7 @@ namespace AED
             }
         }
 
-        public void RemovePos(int n)
+        public void RemoveIndice(int n)
         {
             if (n < 1 || n > Qtde)
                 throw new ArgumentException("Índice inválido ou inexistente");
@@ -825,10 +825,7 @@ namespace AED
                 return default(T);
         }
 
-        public int Quantidade()
-        {
-            return Qtde;
-        }
+        public int Quantidade() => Qtde;
 
         public int PrimeiraOcorrenciaDe(T elemento)
         {
@@ -909,7 +906,6 @@ namespace AED
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
     }
     #endregion
 
@@ -969,7 +965,7 @@ namespace AED
             }
         }
 
-        public bool Vazio() => Primeira == Ultima;
+        public bool EstaVazio() => Primeira == Ultima;
 
         public void Adiciona(TChave key, TValor value)
         {

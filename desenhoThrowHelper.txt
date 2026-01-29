@@ -1,0 +1,14 @@
+Classe CFila: Método Desenfileira deve lançar uma exceção no caso da fila estar vazia.
+Mesma coisa no método Peek, que vem logo em seguida.
+Classe CPilha: Mesma coisa, métodos Desempilha e Peek precisarão lançar uma exceção quando a pilha estiver vazia.
+Na classe CLista: Vou transformar o método InsereIndice em void, então ele terá que lançar uma exceção quando o índice especificado for menor que 1 ou maior que a quantidade de elementos + 1.
+Método RemoveIndice: Alterar o tipo de exceção para quando o índice especificado é menor que 1 ou maior que a quantidade de elementos.
+Melhorar a mensagem das exceções dos métodos InsereAntesDe e InsereDepoisDe, no caso do elemento de referência não ser encontrado.
+Método RetornaIndice: Lançar exceção se o índice especificado for menor que 1 ou maior que a quantidade de itens.
+Método AlteraIndice: Alterar a mensagem e o tipo de exceção lançada quando o índice é inválido.
+Método RetornaPrimeiro: Mesmo tipo de exceção na lançada pilha e fila quando tais estruturas estão vazias.
+Mesma coisa no RetornaUltimo.
+Mesma coisa para os métodos RemoveRetornaComeco/fim.
+Na classe CDicionario, alterar o tipo de exceção lançada quando o usuário tenta adicionar chaves duplicadas.
+Método RetornaValor deve lançar uma exceção se a chave não for encontrada.
+Alterar o tipo de exceção lançada no método AlteraValor.
