@@ -1,3 +1,6 @@
+#nullable disable
+// Código didático baseado em encadeamento com célula cabeça.
+// Referências nulas fazem parte do modelo.
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -1203,3 +1206,4 @@ namespace AED
     }
     #endregion
 }
+#nullable restore
