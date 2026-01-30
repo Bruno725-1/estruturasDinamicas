@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AED
 {
@@ -89,17 +90,22 @@ namespace AED
 
         public T Desenfileira()
         {
-            if (Frente != Tras)
-            {
-                Frente = Frente.Prox;
-                T item = Frente.Item;
-                Qtde--;
-                return item;
-            }
-            return default(T);
+            if (Frente == Tras)
+                ThrowHelper.ColecaoVazia("Fila");
+
+            Frente = Frente.Prox;
+            T item = Frente.Item;
+            Qtde--;
+            return item;
         }
 
-        public T Peek() => Frente != Tras ? Frente.Prox.Item : default(T);
+        public T Peek()
+        {
+            if (Frente == Tras)
+                ThrowHelper.ColecaoVazia("Fila");
+
+            return Frente.Prox.Item;
+        }
 
         public bool Contem(T valorItem)
         {
@@ -178,17 +184,22 @@ namespace AED
 
         public T Desempilha()
         {
-            if (Topo != null)
-            {
-                T item = Topo.Item;
-                Topo = Topo.Prox;
-                Qtde--;
-                return item;
-            }
-            return default(T);
+            if (Topo == null)
+                ThrowHelper.ColecaoVazia("Pilha");
+
+            T item = Topo.Item;
+            Topo = Topo.Prox;
+            Qtde--;
+            return item;
         }
 
-        public T Peek() => Topo != null ? Topo.Item : default(T);
+        public T Peek()
+        {
+            if (Topo == null)
+                ThrowHelper.ColecaoVazia("Pilha");
+
+            return Topo.Item;
+        }
 
         public bool Contem(T valorItem)
         {
@@ -291,9 +302,10 @@ namespace AED
             Qtde++;
         }
 
-        public bool InsereIndice(T valorItem, int posicao)
+        public void InsereIndice(T valorItem, int posicao)
         {
-            if (posicao < 1 || posicao > Qtde + 1) return false;
+            if (posicao < 1 || posicao > Qtde + 1)
+                ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens + 1");
 
             CCelula<T> aux = Primeira;
             for (int i = 0; i < posicao - 1; i++)
@@ -303,15 +315,15 @@ namespace AED
             if (aux.Prox.Prox == null)
                 Ultima = aux.Prox;
             Qtde++;
-            return true;
         }
 
-        public void RemoveIndice(int n)
+        public void RemoveIndice(int posicao)
         {
-            if (n < 1 || n > Qtde)
-                throw new ArgumentException("Índice inválido ou inexistente");
+            if (posicao < 1 || posicao > Qtde)
+                ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
+
             CCelula<T> aux = Primeira;
-            for (int i = 0; i < n - 1; i++)
+            for (int i = 0; i < posicao - 1; i++)
                 aux = aux.Prox;
             aux.Prox = aux.Prox.Prox;
             if (aux.Prox == null)
@@ -331,7 +343,7 @@ namespace AED
                 }
             }
             //se percorreu todo o loop, é porque o elemento antes do qual o item seria adicionado não foi encontrado
-            throw new ArgumentException("Elemento não encontrado");
+            ThrowHelper.ReferenciaNaoEncontrada(nameof(referencia));
         }
 
         public void InsereDepoisDe(T elementoAInserir, T referencia)
@@ -345,7 +357,7 @@ namespace AED
                     return;
                 }
             }
-            throw new ArgumentException("Elemento não encontrado");
+            ThrowHelper.ReferenciaNaoEncontrada(nameof(referencia));
         }
 
         public T[] ParaVetor()
@@ -422,7 +434,7 @@ namespace AED
 
         public void ImprimeInv()
         {
-            if(Primeira.Prox != null)//se a lista não estiver vazia
+            if (Primeira.Prox != null)//se a lista não estiver vazia
                 ImprimeInv(Primeira.Prox);
         }
 
@@ -451,42 +463,58 @@ namespace AED
 
         public T RetornaIndice(int posicao)
         {
-            if (posicao < 1 || posicao > Qtde) return default(T);
+            if (posicao < 1 || posicao > Qtde)
+                ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
 
             var aux = Primeira.Prox;
             for (int i = 1; i < posicao; i++)
                 aux = aux.Prox;
+
             return aux.Item;
         }
 
         public void AlteraIndice(int posicao, T elemento)
         {
             if (posicao < 1 || posicao > Qtde)
-                throw new ArgumentException("Índice inválido ou inexistente");
+                ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
+
             var aux = Primeira.Prox;
             for (int i = 1; i < posicao; i++)
                 aux = aux.Prox;
+
             aux.Item = elemento;
         }
 
-        public T RetornaPrimeiro() => Primeira != Ultima ? Primeira.Prox.Item : default(T);
-
-        public T RetornaUltimo() => Primeira != Ultima ? Ultima.Item : default(T);
-
-        public T RemoveRetornaComecoSimples()
+        public T RetornaPrimeiro()
         {
-            if (Primeira != Ultima)
-            {
-                Primeira = Primeira.Prox;
-                Qtde--;
-                return Primeira.Item;
-            }
-            return default(T);
+            if (Primeira == Ultima)
+                ThrowHelper.ColecaoVazia("Lista");
+
+            return Primeira.Prox.Item;
+        }
+
+        public T RetornaUltimo()
+        {
+            if (Primeira == Ultima)
+                ThrowHelper.ColecaoVazia("Lista");
+
+            return Ultima.Item;
+        }
+
+        public T RemoveRetornaComeco()
+        {
+            if (Primeira == Ultima)
+                ThrowHelper.ColecaoVazia("Lista");
+
+            Primeira = Primeira.Prox;
+            Qtde--;
+            return Primeira.Item;
         }
 
         public T RemoveRetornaFim()
         {
-            if (Primeira == Ultima) return default(T);
+            if (Primeira == Ultima)
+                ThrowHelper.ColecaoVazia("Lista");
 
             var aux = Primeira;
             while (aux.Prox != Ultima)
@@ -499,7 +527,7 @@ namespace AED
             return removida;
         }
 
-        public void Remove(T valorItem)
+        public bool Remove(T valorItem)
         {
             var aux = Primeira;
             while (aux.Prox != null)
@@ -510,10 +538,11 @@ namespace AED
                     if (aux.Prox == null)
                         Ultima = aux;
                     Qtde--;
-                    return;
+                    return true;
                 }
                 aux = aux.Prox;
             }
+            return false;
         }
 
         public void Limpar()
@@ -690,20 +719,21 @@ namespace AED
 
         public void RemoveComecoSemRetorno()
         {
-            if (Primeira != Ultima)
-            {
-                Primeira = Primeira.Prox;
-                Primeira.Ant = null;
-                Qtde--;
-            }
+            if (Primeira == Ultima)
+                ThrowHelper.ColecaoVazia("Lista");
+
+            Primeira = Primeira.Prox;
+            Primeira.Ant = null;
+            Qtde--;
         }
 
-        public void RemoveIndice(int n)
+        public void RemoveIndice(int posicao)
         {
-            if (n < 1 || n > Qtde)
-                throw new ArgumentException("Índice inválido ou inexistente");
+            if (posicao < 1 || posicao > Qtde)
+                ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
+
             CCelulaDup<T> aux = Primeira;
-            for (int i = 0; i < n - 1; i++)
+            for (int i = 0; i < posicao - 1; i++)
             {
                 aux = aux.Prox;
             }
@@ -737,41 +767,41 @@ namespace AED
 
         public T RetornaPrimeiro()
         {
-            if (Primeira != Ultima)
-                return Primeira.Prox.Item;
-            return default(T);
+            if (Primeira == Ultima)
+                ThrowHelper.ColecaoVazia("Lista");
+
+            return Primeira.Prox.Item;
         }
 
-        public T RetornaIndice(int Posicao)
+        public T RetornaIndice(int posicao)
         {
-            if ((Posicao >= 1) && (Posicao <= Qtde) && (Primeira != Ultima))
-            {
-                CCelulaDup<T> aux = Primeira.Prox;
-                for (int i = 1; i < Posicao; i++, aux = aux.Prox) ;
-                if (aux != null)
-                    return aux.Item;
-            }
-            return default(T);
+            if (posicao < 1 || posicao > Qtde)
+                ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
+
+            CCelulaDup<T> aux = Primeira.Prox;
+            for (int i = 1; i < posicao; i++, aux = aux.Prox) ;
+            return aux.Item;
         }
 
         public T RetornaUltimo()
         {
-            if (Primeira != Ultima)
-                return Ultima.Item;
-            return default(T);
+            if (Primeira == Ultima)
+                ThrowHelper.ColecaoVazia("Lista");
+
+            return Ultima.Item;
         }
 
         public void RemoveFimSemRetorno()
         {
-            if (Primeira != Ultima)
-            {
-                Ultima = Ultima.Ant;
-                Ultima.Prox = null;
-                Qtde--;
-            }
+            if (Primeira == Ultima)
+                ThrowHelper.ColecaoVazia("Lista");
+
+            Ultima = Ultima.Ant;
+            Ultima.Prox = null;
+            Qtde--;
         }
 
-        public void Remove(T valorItem)
+        public bool Remove(T valorItem)
         {
             if (Primeira != Ultima)
             {
@@ -793,36 +823,34 @@ namespace AED
                     else
                         Ultima = anterior;
                     Qtde--;
+                    return true;
                 }
             }
+            return false;
         }
 
         public T RemoveRetornaComeco()
         {
-            if (Primeira != Ultima)
-            {
-                CCelulaDup<T> aux = Primeira.Prox;
-                Primeira = Primeira.Prox;
-                Primeira.Ant = null;
-                Qtde--;
-                return aux.Item;
-            }
-            else
-                return default(T);
+            if (Primeira == Ultima)
+                ThrowHelper.ColecaoVazia("Lista");
+
+            CCelulaDup<T> aux = Primeira.Prox;
+            Primeira = Primeira.Prox;
+            Primeira.Ant = null;
+            Qtde--;
+            return aux.Item;
         }
 
         public T RemoveRetornaFim()
         {
-            if (Primeira != Ultima)
-            {
-                CCelulaDup<T> aux = Ultima;
-                Ultima = Ultima.Ant;
-                Ultima.Prox = null;
-                Qtde--;
-                return aux.Item;
-            }
-            else
-                return default(T);
+            if (Primeira == Ultima)
+                ThrowHelper.ColecaoVazia("Lista");
+
+            CCelulaDup<T> aux = Ultima;
+            Ultima = Ultima.Ant;
+            Ultima.Prox = null;
+            Qtde--;
+            return aux.Item;
         }
 
         public int Quantidade() => Qtde;
@@ -858,7 +886,8 @@ namespace AED
         public void AlteraIndice(int posicao, T elemento)
         {
             if (posicao < 1 || posicao > Qtde)
-                throw new ArgumentException("Índice inválido ou inexistente");
+                ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
+
             var aux = Primeira.Prox;
             for (int i = 1; i < posicao; i++)
                 aux = aux.Prox;
@@ -887,7 +916,7 @@ namespace AED
             int fim = Qtde;
             CCelulaDup<T> inicial = Primeira.Prox;
             CCelulaDup<T> final = Ultima;
-            while(inicio<fim)
+            while (inicio < fim)
             {
                 T temp = inicial.Item;
                 inicial.Item = final.Item;
@@ -974,7 +1003,8 @@ namespace AED
             while (aux != null)
             {
                 if (EqualityComparer<TChave>.Default.Equals(aux.Chave, key))
-                    throw new ArgumentException("A chave passada por parâmetro já existe");
+                    ThrowHelper.ChaveDuplicada(key);
+
                 aux = aux.Prox;
             }
             //se chegou aqui, é porque a chave não existe
@@ -983,7 +1013,7 @@ namespace AED
             Qtde++;
         }
 
-        public void Remove(TChave key)
+        public bool Remove(TChave key)
         {
             CCelulaDic<TChave, TValor> aux = Primeira;
             while (aux.Prox != null)
@@ -994,10 +1024,11 @@ namespace AED
                     if (aux.Prox == null)
                         Ultima = aux;
                     Qtde--;
-                    return;
+                    return true;
                 }
                 aux = aux.Prox;
             }
+            return false;
         }
 
         public TValor RetornaValor(TChave key)
@@ -1009,7 +1040,8 @@ namespace AED
                     return aux.Valor;
                 aux = aux.Prox;
             }
-            return default(TValor);
+            ThrowHelper.ChaveNaoEncontrada(key);
+            return default!;
         }
 
         public void InsereValor(TChave key, TValor value)
@@ -1025,7 +1057,8 @@ namespace AED
                 aux = aux.Prox;
             }
             //se percorreu todo o loop, é porque a chave passada por parâmetro não foi encontrada
-            throw new ArgumentException("A chave passada por parâmetro não foi encontrada");
+            Ultima.Prox = new CCelulaDic<TChave, TValor>(key, value);
+            Ultima = Ultima.Prox;
         }
 
         public TChave[] Chaves()
@@ -1078,7 +1111,7 @@ namespace AED
             return achou;
         }
 
-        public void Ordenar() //implementa um método de ordenação por chaves
+        public void Ordenar() // Implementa um método de ordenação por chaves
         {
             if (Qtde < 2) return;
             bool houveTroca = true;
@@ -1140,12 +1173,13 @@ namespace AED
     internal static class ThrowHelper
     {
         ///<summary>Lança uma exceção quando se tenta remover um item de uma coleção vazia.</summary>
+        [DoesNotReturn]
         internal static void ColecaoVazia(string nomeColecao) =>
             throw new InvalidOperationException($"{nomeColecao} vazia.");
 
         ///<summary>Lança uma exceção quando se tenta acessar um índice inválido nas listas.</summary>
         internal static void IndiceInvalido(string nomeParametro, string intervalo) =>
-            throw new ArgumentOutOfRangeException(nomeParametro, "O índice especificado estava fora do intervalo válido. Deve ser {intervalo}.");
+            throw new ArgumentOutOfRangeException(nomeParametro, $"O índice especificado estava fora do intervalo válido. Deve ser {intervalo}.");
 
         ///<summary>Lança uma exceção quando se tenta adicionar um elemento antes ou depois de um elemento que não existe nas listas.</summary>
         internal static void ReferenciaNaoEncontrada(string nomeParametro) =>
