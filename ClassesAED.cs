@@ -1135,4 +1135,37 @@ namespace AED
         }
     }
     #endregion
+
+    #region Classe ThrowHelper - classe auxiliar para lançamento de exceções quando necessário
+    internal static class ThrowHelper
+    {
+        ///<summary>Lança uma exceção quando se tenta remover um item de uma coleção vazia.</summary>
+        internal static void ColecaoVazia(string nomeColecao) =>
+            throw new InvalidOperationException($"{nomeColecao} vazia.");
+
+        ///<summary>Lança uma exceção quando se tenta acessar um índice inválido nas listas.</summary>
+        internal static void IndiceInvalido(string nomeParametro, string intervalo) =>
+            throw new ArgumentOutOfRangeException(nomeParametro, "O índice especificado estava fora do intervalo válido. Deve ser {intervalo}.");
+
+        ///<summary>Lança uma exceção quando se tenta adicionar um elemento antes ou depois de um elemento que não existe nas listas.</summary>
+        internal static void ReferenciaNaoEncontrada(string nomeParametro) =>
+            throw new ArgumentException("O elemento de referência especificado não foi encontrado na lista.", nomeParametro);
+
+        ///<summary>Lança uma exceção para tentativas de inserção de chave duplicada no dicionário.</summary>
+        internal static void ChaveDuplicada<TChave>(TChave chave) =>
+            throw new ArgumentException($"Um item com a mesma chave já foi adicionado. Chave: {chave}");
+
+        ///<summary>Lança uma exceção para chaves não encontradas no dicionário.</summary>
+        internal static void ChaveNaoEncontrada<TChave>(TChave chave) =>
+            throw new KeyNotFoundException($"A chave '{chave}' não foi encontrada no dicionário.");
+
+        ///<summary>Lança uma exceção para coleções modificadas durante loops foreach</summary>
+        internal static void ColecaoModificada(string nomeColecao) =>
+            throw new InvalidOperationException($"A {nomeColecao} foi modificada. Operação de enumeração cancelada.");
+
+        ///<summary>Lança uma exceção quando se tenta copiar coleções nulas.</summary>
+        internal static void ColecaoNula(string nomeParametro) =>
+            throw new ArgumentNullException(nomeParametro, "A coleção a copiar não pode ser nula.");
+    }
+    #endregion
 }

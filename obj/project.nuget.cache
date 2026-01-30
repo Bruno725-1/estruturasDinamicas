@@ -1,12 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Lg0cH3h1HUE=",
+  "dgSpecHash": "zFRjDajaOho=",
   "success": true,
-  "projectFilePath": "/workspaces/estruturasDinamicas/listaEstudo.csproj",
-  "expectedPackageFiles": [
-    "/home/codespace/.nuget/packages/microsoft.netcore.app.ref/9.0.11/microsoft.netcore.app.ref.9.0.11.nupkg.sha512",
-    "/home/codespace/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.11/microsoft.aspnetcore.app.ref.9.0.11.nupkg.sha512",
-    "/home/codespace/.nuget/packages/microsoft.netcore.app.host.linux-x64/9.0.11/microsoft.netcore.app.host.linux-x64.9.0.11.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\User\\Documents\\Csharp\\estruturasDinamicas\\listaEstudo.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }
