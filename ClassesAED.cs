@@ -17,21 +17,15 @@ namespace AED
         public T Item;
         public CCelula<T> Prox;
 
-        public CCelula()
-        {
-            Item = default(T);
-            Prox = null;
-        }
+        public CCelula() {}
 
         public CCelula(T valorItem)
         {
             Item = valorItem;
-            Prox = null;
         }
 
-        public CCelula(T valorItem, CCelula<T> proxCelula)
+        public CCelula(T valorItem, CCelula<T> proxCelula) : this(valorItem)
         {
-            Item = valorItem;
             Prox = proxCelula;
         }
     }
@@ -40,101 +34,83 @@ namespace AED
     #region Classe CFila - Fila (ou lista FIFO: first-in first-out)
     public class CFila<T> : IEnumerable<T>
     {
-        private CCelula<T> Frente;
-        private CCelula<T> Tras;
-        private int Qtde = 0;
+        private CCelula<T> _frente;
+        private CCelula<T> _tras;
+        private int _quantidade;
 
         public CFila()
         {
-            Frente = new CCelula<T>();
-            Tras = Frente;
+            _frente = new CCelula<T>();
+            _tras = _frente;
         }
 
-        public CFila(T[] vetor)
+        // Copia o conteúdo de uma coleção recebida como parâmetro.
+        // Antes de copiar a coleção, o construtor inicializa a célula cabeça através do encadeamento.
+        // Para que o compilador gere warnings corretamente em caso de coleções possivelmente nulas, reativei os avisos de nulabilidade.
+        #nullable restore
+        public CFila(IEnumerable<T> colecao) : this()
         {
-            Frente = new CCelula<T>();
-            Tras = Frente;
-            for (int i = 0; i < vetor.Length; i++)
-            {
-                Tras.Prox = new CCelula<T>(vetor[i]);
-                Tras = Tras.Prox;
-                Qtde++;
-            }
-        }
+            if(colecao == null)
+                ThrowHelper.ColecaoNula(nameof(colecao));
 
-        public CFila(CFila<T> f)
-        {
-            Frente = new CCelula<T>();
-            Tras = Frente;
-            for (CCelula<T> aux = f.Frente.Prox; aux != null; aux = aux.Prox)
-            {
-                Tras.Prox = new CCelula<T>(aux.Item);
-                Tras = Tras.Prox;
-                Qtde++;
-            }
-        }
-
-        public CFila(CPilha<T> p)
-        {
-            Frente = new CCelula<T>();
-            Tras = Frente;
-            foreach (T item in p)
+            foreach(T item in colecao)
                 Enfileira(item);
         }
+        #nullable disable
 
-        public bool EstaVazia() => Frente == Tras;
+        public bool EstaVazia => _frente == _tras;
 
         public void Enfileira(T valorItem)
         {
-            Tras.Prox = new CCelula<T>(valorItem);
-            Tras = Tras.Prox;
-            Qtde++;
+            _tras.Prox = new CCelula<T>(valorItem);
+            _tras = _tras.Prox;
+            _quantidade++;
         }
 
         public T Desenfileira()
         {
-            if (Frente == Tras)
+            if (_frente == _tras)
                 ThrowHelper.ColecaoVazia("Fila");
 
-            Frente = Frente.Prox;
-            T item = Frente.Item;
-            Qtde--;
+            _frente = _frente.Prox;
+            T item = _frente.Item;
+            _quantidade--;
             return item;
         }
 
         public T Peek()
         {
-            if (Frente == Tras)
+            if (_frente == _tras)
                 ThrowHelper.ColecaoVazia("Fila");
 
-            return Frente.Prox.Item;
+            return _frente.Prox.Item;
         }
 
         public bool Contem(T valorItem)
         {
-            for (CCelula<T> aux = Frente.Prox; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = _frente.Prox; aux != null; aux = aux.Prox)
                 if (EqualityComparer<T>.Default.Equals(aux.Item, valorItem))
                     return true;
             return false;
         }
 
-        public int Quantidade() => Qtde;
+        public int Quantidade => _quantidade;
 
         public static CFila<T> ConcatenaFila(CFila<T> F1, CFila<T> F2)
         {
             CFila<T> concatenada = new CFila<T>();
             //percorrer as duas filas até o final
-            for (CCelula<T> aux = F1.Frente.Prox; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = F1._frente.Prox; aux != null; aux = aux.Prox)
             {
-                concatenada.Tras.Prox = new CCelula<T>(aux.Item);
-                concatenada.Tras = concatenada.Tras.Prox;
-                concatenada.Qtde++;
+                concatenada._tras.Prox = new CCelula<T>(aux.Item);
+                concatenada._tras = concatenada._tras.Prox;
+                concatenada._quantidade++;
             }
-            for (CCelula<T> aux = F2.Frente.Prox; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = F2._frente.Prox; aux != null; aux = aux.Prox)
             {
-                concatenada.Tras.Prox = new CCelula<T>(aux.Item);
-                concatenada.Tras = concatenada.Tras.Prox;
-                concatenada.Qtde++;
+                concatenada._tras.Prox = new CCelula<T>(aux.Item);
+                concatenada._tras = concatenada._tras.Prox;
+                concatenada._quantidade++;
             }
             return concatenada;
         }
@@ -142,7 +118,7 @@ namespace AED
         public int OcorrenciasDe(T elemento)
         {
             int ocorrencias = 0;
-            for (CCelula<T> aux = Frente.Prox; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = _frente.Prox; aux != null; aux = aux.Prox)
             {
                 if (EqualityComparer<T>.Default.Equals(aux.Item, elemento))
                     ocorrencias++;
@@ -152,18 +128,18 @@ namespace AED
 
         public void Limpar()
         {
-            if (Frente == Tras) return;
-            while (Frente.Prox != null)
+            if (_frente == _tras) return;
+            while (_frente.Prox != null)
             {
-                Frente.Prox = Frente.Prox.Prox;
-                Qtde--;
+                _frente.Prox = _frente.Prox.Prox;
+                _quantidade--;
             }
-            Tras = Frente;
+            _tras = _frente;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            for (var aux = Frente.Prox; aux != null; aux = aux.Prox)
+            for (var aux = _frente.Prox; aux != null; aux = aux.Prox)
                 yield return aux.Item;
         }
 
@@ -174,76 +150,89 @@ namespace AED
     #region Classe CPilha - CPilha (ou lista LIFO: last-in first-out)
     public class CPilha<T> : IEnumerable<T>
     {
-        private CCelula<T> Topo = null;
-        private int Qtde = 0;
+        private CCelula<T> _topo;
+        private int _quantidade;
 
-        public bool EstaVazia() => Topo == null;
+        public CPilha() {}
+
+        #nullable restore
+        public CPilha(IEnumerable<T> colecao)
+        {
+            if(colecao == null)
+                ThrowHelper.ColecaoNula(nameof(colecao));
+
+            foreach(T item in colecao)
+                Empilha(item);
+        }
+        #nullable disable
+
+        public bool EstaVazia => _topo == null;
 
         public void Empilha(T valorItem)
         {
-            Topo = new CCelula<T>(valorItem, Topo);
-            Qtde++;
+            _topo = new CCelula<T>(valorItem, _topo);
+            _quantidade++;
         }
 
         public T Desempilha()
         {
-            if (Topo == null)
+            if (_topo == null)
                 ThrowHelper.ColecaoVazia("Pilha");
 
-            T item = Topo.Item;
-            Topo = Topo.Prox;
-            Qtde--;
+            T item = _topo.Item;
+            _topo = _topo.Prox;
+            _quantidade--;
             return item;
         }
 
         public T Peek()
         {
-            if (Topo == null)
+            if (_topo == null)
                 ThrowHelper.ColecaoVazia("Pilha");
 
-            return Topo.Item;
+            return _topo.Item;
         }
 
         public bool Contem(T valorItem)
         {
-            for (var aux = Topo; aux != null; aux = aux.Prox)
+            for (var aux = _topo; aux != null; aux = aux.Prox)
                 if (EqualityComparer<T>.Default.Equals(aux.Item, valorItem))
                     return true;
             return false;
         }
 
-        public int Quantidade() => Qtde;
+        public int Quantidade => _quantidade;
 
         public static CPilha<T> ConcatenaPilha(CPilha<T> P1, CPilha<T> P2)
         {
             CPilha<T> concatenada = new CPilha<T>();
             //percorrer as duas pilhas até o final
-            for (CCelula<T> aux = P1.Topo; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = P1._topo; aux != null; aux = aux.Prox)
             {
-                concatenada.Topo = new CCelula<T>(aux.Item, concatenada.Topo);
-                concatenada.Qtde++;
+                concatenada._topo = new CCelula<T>(aux.Item, concatenada._topo);
+                concatenada._quantidade++;
             }
-            for (CCelula<T> aux = P2.Topo; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = P2._topo; aux != null; aux = aux.Prox)
             {
-                concatenada.Topo = new CCelula<T>(aux.Item, concatenada.Topo);
-                concatenada.Qtde++;
+                concatenada._topo = new CCelula<T>(aux.Item, concatenada._topo);
+                concatenada._quantidade++;
             }
             return concatenada;
         }
 
         public void Limpar()
         {
-            if (Topo == null) return;
-            while (Topo != null)
+            if (_topo == null) return;
+            while (_topo != null)
             {
-                Topo = Topo.Prox;
-                Qtde--;
+                _topo = _topo.Prox;
+                _quantidade--;
             }
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            for (var aux = Topo; aux != null; aux = aux.Prox)
+            for (var aux = _topo; aux != null; aux = aux.Prox)
                 yield return aux.Item;
         }
 
@@ -256,7 +245,7 @@ namespace AED
     {
         private CCelula<T> Primeira;
         private CCelula<T> Ultima;
-        private int Qtde = 0;
+        private int _quantidade;
 
         public CLista()
         {
@@ -264,37 +253,24 @@ namespace AED
             Ultima = Primeira;
         }
 
-        public CLista(T[] vetor)
+        #nullable restore
+        public CLista(IEnumerable<T> colecao) : this()
         {
-            Primeira = new CCelula<T>();
-            Ultima = Primeira;
-            for (int i = 0; i < vetor.Length; i++)
-            {
-                Ultima.Prox = new CCelula<T>(vetor[i]);
-                Ultima = Ultima.Prox;
-                Qtde++;
-            }
-        }
+            if(colecao == null)
+                ThrowHelper.ColecaoNula(nameof(colecao));
 
-        public CLista(CLista<T> l)
-        {
-            Primeira = new CCelula<T>();
-            Ultima = Primeira;
-            for (CCelula<T> aux = l.Primeira.Prox; aux != null; aux = aux.Prox)
-            {
-                Ultima.Prox = new CCelula<T>(aux.Item);
-                Ultima = Ultima.Prox;
-                Qtde++;
-            }
+            foreach(T item in colecao)
+                Adiciona(item);
         }
+        #nullable disable
 
-        public bool EstaVazia() => Primeira == Ultima;
+        public bool EstaVazia => Primeira == Ultima;
 
         public void Adiciona(T valorItem)
         {
             Ultima.Prox = new CCelula<T>(valorItem);
             Ultima = Ultima.Prox;
-            Qtde++;
+            _quantidade++;
         }
 
         public void InsereComeco(T valorItem)
@@ -302,12 +278,12 @@ namespace AED
             Primeira.Prox = new CCelula<T>(valorItem, Primeira.Prox);
             if (Primeira.Prox.Prox == null)
                 Ultima = Primeira.Prox;
-            Qtde++;
+            _quantidade++;
         }
 
         public void InsereIndice(T valorItem, int posicao)
         {
-            if (posicao < 1 || posicao > Qtde + 1)
+            if (posicao < 1 || posicao > _quantidade + 1)
                 ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens + 1");
 
             CCelula<T> aux = Primeira;
@@ -317,12 +293,12 @@ namespace AED
             aux.Prox = new CCelula<T>(valorItem, aux.Prox);
             if (aux.Prox.Prox == null)
                 Ultima = aux.Prox;
-            Qtde++;
+            _quantidade++;
         }
 
         public void RemoveIndice(int posicao)
         {
-            if (posicao < 1 || posicao > Qtde)
+            if (posicao < 1 || posicao > _quantidade)
                 ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
 
             CCelula<T> aux = Primeira;
@@ -331,7 +307,7 @@ namespace AED
             aux.Prox = aux.Prox.Prox;
             if (aux.Prox == null)
                 Ultima = aux;
-            Qtde--;
+            _quantidade--;
         }
 
         public void InsereAntesDe(T elementoAInserir, T referencia)
@@ -341,7 +317,7 @@ namespace AED
                 if (EqualityComparer<T>.Default.Equals(aux.Prox.Item, referencia))
                 {
                     aux.Prox = new CCelula<T>(elementoAInserir, aux.Prox);
-                    Qtde++;
+                    _quantidade++;
                     return;
                 }
             }
@@ -356,7 +332,7 @@ namespace AED
                 if (EqualityComparer<T>.Default.Equals(aux.Item, referencia))
                 {
                     aux.Prox = new CCelula<T>(elementoAInserir, aux.Prox);
-                    Qtde++;
+                    _quantidade++;
                     return;
                 }
             }
@@ -365,7 +341,7 @@ namespace AED
 
         public T[] ParaVetor()
         {
-            T[] vetor = new T[Qtde];
+            T[] vetor = new T[_quantidade];
             CCelula<T> aux = Primeira.Prox;
             for (int i = 0; i < vetor.Length; i++)
             {
@@ -405,7 +381,7 @@ namespace AED
 
         public void Ordenar()
         {
-            if (Qtde < 2) return;
+            if (_quantidade < 2) return;
             bool houveTroca = true;
             while (houveTroca)
             {
@@ -466,7 +442,7 @@ namespace AED
 
         public T RetornaIndice(int posicao)
         {
-            if (posicao < 1 || posicao > Qtde)
+            if (posicao < 1 || posicao > _quantidade)
                 ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
 
             var aux = Primeira.Prox;
@@ -478,7 +454,7 @@ namespace AED
 
         public void AlteraIndice(int posicao, T elemento)
         {
-            if (posicao < 1 || posicao > Qtde)
+            if (posicao < 1 || posicao > _quantidade)
                 ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
 
             var aux = Primeira.Prox;
@@ -510,7 +486,7 @@ namespace AED
                 ThrowHelper.ColecaoVazia("Lista");
 
             Primeira = Primeira.Prox;
-            Qtde--;
+            _quantidade--;
             return Primeira.Item;
         }
 
@@ -526,7 +502,7 @@ namespace AED
             var removida = Ultima.Item;
             Ultima = aux;
             Ultima.Prox = null;
-            Qtde--;
+            _quantidade--;
             return removida;
         }
 
@@ -540,7 +516,7 @@ namespace AED
                     aux.Prox = aux.Prox.Prox;
                     if (aux.Prox == null)
                         Ultima = aux;
-                    Qtde--;
+                    _quantidade--;
                     return true;
                 }
                 aux = aux.Prox;
@@ -554,24 +530,24 @@ namespace AED
             while (Primeira.Prox != null)
             {
                 Primeira.Prox = Primeira.Prox.Prox;
-                Qtde--;
+                _quantidade--;
             }
             Ultima = Primeira;
         }
 
-        public int Quantidade() => Qtde;
+        public int Quantidade => _quantidade;
 
         public void Inverte()
         {
-            T[] vet = new T[Qtde];
+            T[] vet = new T[_quantidade];
             CCelula<T> aux = Primeira.Prox;
-            for (int i = 0; i < Qtde; i++)
+            for (int i = 0; i < _quantidade; i++)
             {
                 vet[i] = aux.Item;
                 aux = aux.Prox;
             }
             aux = Primeira.Prox;
-            for (int i = Qtde - 1; i >= 0; i--)
+            for (int i = _quantidade - 1; i >= 0; i--)
             {
                 aux.Item = vet[i];
                 aux = aux.Prox;
@@ -599,23 +575,15 @@ namespace AED
         public CCelulaDup<T> Ant; // Referencia a célula anterior
         public CCelulaDup<T> Prox; // Referencia a próxima célula
 
-        public CCelulaDup()
-        {
-            Item = default(T);
-            Ant = null;
-            Prox = null;
-        }
+        public CCelulaDup() {}
 
         public CCelulaDup(T valorItem)
         {
             Item = valorItem;
-            Ant = null;
-            Prox = null;
         }
 
-        public CCelulaDup(T valorItem, CCelulaDup<T> celulaAnt, CCelulaDup<T> proxCelula)
+        public CCelulaDup(T valorItem, CCelulaDup<T> celulaAnt, CCelulaDup<T> proxCelula) : this(valorItem)
         {
-            Item = valorItem;
             Ant = celulaAnt;
             Prox = proxCelula;
         }
@@ -628,46 +596,33 @@ namespace AED
     /// </summary>
     public class CListaDup<T> : IEnumerable<T>
     {
-        private CCelulaDup<T> Primeira; // Referencia a primeira célula da lista (célula cabeça)
-        private CCelulaDup<T> Ultima; // Referencia a última célula da lista 
-        private int Qtde = 0;
+        private CCelulaDup<T> _primeira; // Referencia a primeira célula da lista (célula cabeça)
+        private CCelulaDup<T> _ultima; // Referencia a última célula da lista 
+        private int _quantidade;
 
         public CListaDup()
         {
-            Primeira = new CCelulaDup<T>();
-            Ultima = Primeira;
+            _primeira = new CCelulaDup<T>();
+            _ultima = _primeira;
         }
 
-        public CListaDup(CListaDup<T> l)
+        #nullable restore
+        public CListaDup(IEnumerable<T> colecao) : this()
         {
-            Primeira = new CCelulaDup<T>();
-            Ultima = Primeira;
-            for (CCelulaDup<T> aux = l.Primeira.Prox; aux != null; aux = aux.Prox)
-            {
-                Ultima.Prox = new CCelulaDup<T>(aux.Item, Ultima, null);
-                Ultima = Ultima.Prox;
-                Qtde++;
-            }
-        }
+            if(colecao == null)
+                ThrowHelper.ColecaoNula(nameof(colecao));
 
-        public CListaDup(T[] vetor)
-        {
-            Primeira = new CCelulaDup<T>();
-            Ultima = Primeira;
-            for (int i = 0; i < vetor.Length; i++)
-            {
-                Ultima.Prox = new CCelulaDup<T>(vetor[i], Ultima, null);
-                Ultima = Ultima.Prox;
-                Qtde++;
-            }
+            foreach(T item in colecao)
+                Adiciona(item);
         }
+        #nullable disable
 
-        public bool EstaVazia() => Primeira == Ultima;
+        public bool EstaVazia => _primeira == _ultima;
 
         public T[] ParaVetor()
         {
-            T[] vetor = new T[Qtde];
-            CCelulaDup<T> aux = Primeira.Prox;
+            T[] vetor = new T[_quantidade];
+            CCelulaDup<T> aux = _primeira.Prox;
             for (int i = 0; i < vetor.Length; i++)
             {
                 vetor[i] = aux.Item;
@@ -678,12 +633,12 @@ namespace AED
 
         public void Ordenar()
         {
-            if (Qtde < 2) return;
+            if (_quantidade < 2) return;
             bool houveTroca = true;
             while (houveTroca)
             {
                 houveTroca = false;
-                CCelulaDup<T> atual = Primeira.Prox;
+                CCelulaDup<T> atual = _primeira.Prox;
                 while (atual != null && atual.Prox != null)
                 {
                     if (Comparer<T>.Default.Compare(atual.Item, atual.Prox.Item) > 0)
@@ -700,42 +655,42 @@ namespace AED
 
         public void Adiciona(T valorItem)
         {
-            Ultima.Prox = new CCelulaDup<T>(valorItem, Ultima, null);
-            Ultima = Ultima.Prox;
-            Qtde++;
+            _ultima.Prox = new CCelulaDup<T>(valorItem, _ultima, null);
+            _ultima = _ultima.Prox;
+            _quantidade++;
         }
 
         public void InsereComeco(T valorItem)
         {
-            if (Primeira == Ultima) // Se a lista estiver vazia insere no fim
+            if (_primeira == _ultima) // Se a lista estiver vazia insere no fim
             {
-                Ultima.Prox = new CCelulaDup<T>(valorItem, Ultima, null);
-                Ultima = Ultima.Prox;
+                _ultima.Prox = new CCelulaDup<T>(valorItem, _ultima, null);
+                _ultima = _ultima.Prox;
             }
             else // senão insere no começo
             {
-                Primeira.Prox = new CCelulaDup<T>(valorItem, Primeira, Primeira.Prox);
-                Primeira.Prox.Prox.Ant = Primeira.Prox;
+                _primeira.Prox = new CCelulaDup<T>(valorItem, _primeira, _primeira.Prox);
+                _primeira.Prox.Prox.Ant = _primeira.Prox;
             }
-            Qtde++;
+            _quantidade++;
         }
 
         public void RemoveComecoSemRetorno()
         {
-            if (Primeira == Ultima)
+            if (_primeira == _ultima)
                 ThrowHelper.ColecaoVazia("Lista");
 
-            Primeira = Primeira.Prox;
-            Primeira.Ant = null;
-            Qtde--;
+            _primeira = _primeira.Prox;
+            _primeira.Ant = null;
+            _quantidade--;
         }
 
         public void RemoveIndice(int posicao)
         {
-            if (posicao < 1 || posicao > Qtde)
+            if (posicao < 1 || posicao > _quantidade)
                 ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
 
-            CCelulaDup<T> aux = Primeira;
+            CCelulaDup<T> aux = _primeira;
             for (int i = 0; i < posicao - 1; i++)
             {
                 aux = aux.Prox;
@@ -744,71 +699,71 @@ namespace AED
             if (aux.Prox != null) //se a célula removida não era a última
                 aux.Prox.Ant = aux;
             else
-                Ultima = aux; //atualizar ponteiro Ultima
-            Qtde--;
+                _ultima = aux; //atualizar ponteiro Ultima
+            _quantidade--;
         }
 
         public void Imprime()
         {
-            for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            for (CCelulaDup<T> aux = _primeira.Prox; aux != null; aux = aux.Prox)
                 Console.WriteLine(aux.Item);
         }
 
         public void ImprimeInv()
         {
-            for (CCelulaDup<T> aux = Ultima; aux.Ant != null; aux = aux.Ant)
+            for (CCelulaDup<T> aux = _ultima; aux.Ant != null; aux = aux.Ant)
                 Console.WriteLine(aux.Item);
         }
 
         public bool Contem(T elemento)
         {
             bool achou = false;
-            for (CCelulaDup<T> aux = Primeira.Prox; aux != null && !achou; aux = aux.Prox)
+            for (CCelulaDup<T> aux = _primeira.Prox; aux != null && !achou; aux = aux.Prox)
                 achou = EqualityComparer<T>.Default.Equals(aux.Item, elemento);
             return achou;
         }
 
         public T RetornaPrimeiro()
         {
-            if (Primeira == Ultima)
+            if (_primeira == _ultima)
                 ThrowHelper.ColecaoVazia("Lista");
 
-            return Primeira.Prox.Item;
+            return _primeira.Prox.Item;
         }
 
         public T RetornaIndice(int posicao)
         {
-            if (posicao < 1 || posicao > Qtde)
+            if (posicao < 1 || posicao > _quantidade)
                 ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
 
-            CCelulaDup<T> aux = Primeira.Prox;
+            CCelulaDup<T> aux = _primeira.Prox;
             for (int i = 1; i < posicao; i++, aux = aux.Prox) ;
             return aux.Item;
         }
 
         public T RetornaUltimo()
         {
-            if (Primeira == Ultima)
+            if (_primeira == _ultima)
                 ThrowHelper.ColecaoVazia("Lista");
 
-            return Ultima.Item;
+            return _ultima.Item;
         }
 
         public void RemoveFimSemRetorno()
         {
-            if (Primeira == Ultima)
+            if (_primeira == _ultima)
                 ThrowHelper.ColecaoVazia("Lista");
 
-            Ultima = Ultima.Ant;
-            Ultima.Prox = null;
-            Qtde--;
+            _ultima = _ultima.Ant;
+            _ultima.Prox = null;
+            _quantidade--;
         }
 
         public bool Remove(T valorItem)
         {
-            if (Primeira != Ultima)
+            if (_primeira != _ultima)
             {
-                CCelulaDup<T> aux = Primeira.Prox;
+                CCelulaDup<T> aux = _primeira.Prox;
                 bool achou = false;
                 while (aux != null && !achou)
                 {
@@ -824,8 +779,8 @@ namespace AED
                     if (proximo != null)
                         proximo.Ant = anterior;
                     else
-                        Ultima = anterior;
-                    Qtde--;
+                        _ultima = anterior;
+                    _quantidade--;
                     return true;
                 }
             }
@@ -834,34 +789,34 @@ namespace AED
 
         public T RemoveRetornaComeco()
         {
-            if (Primeira == Ultima)
+            if (_primeira == _ultima)
                 ThrowHelper.ColecaoVazia("Lista");
 
-            CCelulaDup<T> aux = Primeira.Prox;
-            Primeira = Primeira.Prox;
-            Primeira.Ant = null;
-            Qtde--;
+            CCelulaDup<T> aux = _primeira.Prox;
+            _primeira = _primeira.Prox;
+            _primeira.Ant = null;
+            _quantidade--;
             return aux.Item;
         }
 
         public T RemoveRetornaFim()
         {
-            if (Primeira == Ultima)
+            if (_primeira == _ultima)
                 ThrowHelper.ColecaoVazia("Lista");
 
-            CCelulaDup<T> aux = Ultima;
-            Ultima = Ultima.Ant;
-            Ultima.Prox = null;
-            Qtde--;
+            CCelulaDup<T> aux = _ultima;
+            _ultima = _ultima.Ant;
+            _ultima.Prox = null;
+            _quantidade--;
             return aux.Item;
         }
 
-        public int Quantidade() => Qtde;
+        public int Quantidade => _quantidade;
 
         public int PrimeiraOcorrenciaDe(T elemento)
         {
             int indice = 1;
-            for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            for (CCelulaDup<T> aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
                 if (EqualityComparer<T>.Default.Equals(aux.Item, elemento)) return indice;
                 indice++;
@@ -873,7 +828,7 @@ namespace AED
         {
             int indice = 1, ocorrencia = 0;
             bool achou = false;
-            for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            for (CCelulaDup<T> aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
                 if (EqualityComparer<T>.Default.Equals(aux.Item, elemento))
                 {
@@ -888,10 +843,10 @@ namespace AED
 
         public void AlteraIndice(int posicao, T elemento)
         {
-            if (posicao < 1 || posicao > Qtde)
+            if (posicao < 1 || posicao > _quantidade)
                 ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
 
-            var aux = Primeira.Prox;
+            var aux = _primeira.Prox;
             for (int i = 1; i < posicao; i++)
                 aux = aux.Prox;
             aux.Item = elemento;
@@ -899,26 +854,26 @@ namespace AED
 
         public void Limpar()
         {
-            if (Primeira == Ultima) return;
-            CCelulaDup<T> atual = Primeira.Prox;
+            if (_primeira == _ultima) return;
+            CCelulaDup<T> atual = _primeira.Prox;
             while (atual != null)
             {
                 CCelulaDup<T> proxima = atual.Prox;
                 atual.Ant = null;
                 atual.Prox = null;
                 atual = proxima;
-                Qtde--;
+                _quantidade--;
             }
-            Primeira.Prox = null;
-            Ultima = Primeira;
+            _primeira.Prox = null;
+            _ultima = _primeira;
         }
 
         public void Inverte()
         {
             int inicio = 1;
-            int fim = Qtde;
-            CCelulaDup<T> inicial = Primeira.Prox;
-            CCelulaDup<T> final = Ultima;
+            int fim = _quantidade;
+            CCelulaDup<T> inicial = _primeira.Prox;
+            CCelulaDup<T> final = _ultima;
             while (inicio < fim)
             {
                 T temp = inicial.Item;
@@ -933,7 +888,7 @@ namespace AED
 
         public IEnumerator<T> GetEnumerator()
         {
-            for (CCelulaDup<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            for (CCelulaDup<T> aux = _primeira.Prox; aux != null; aux = aux.Prox)
                 yield return aux.Item;
         }
 
@@ -1088,7 +1043,7 @@ namespace AED
             return vetor;
         }
 
-        public int Quantidade() => Qtde;
+        public int Quantidade => Qtde;
 
         public bool ContemChave(TChave key)
         {
@@ -1201,6 +1156,7 @@ namespace AED
             throw new InvalidOperationException($"A {nomeColecao} foi modificada. Operação de enumeração cancelada.");
 
         ///<summary>Lança uma exceção quando se tenta copiar coleções nulas.</summary>
+        [DoesNotReturn]
         internal static void ColecaoNula(string nomeParametro) =>
             throw new ArgumentNullException(nomeParametro, "A coleção a copiar não pode ser nula.");
     }
