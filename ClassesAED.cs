@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 
 namespace AED
 {
@@ -261,7 +260,7 @@ namespace AED
     #endregion
 
     #region Classe CLista - Lista encadeada (simples) com célula cabeça
-    public class CLista<T> : IEnumerable<T>
+    public class CLista<T> : IEnumerable<T>, ICollection<T>
     {
         private CCelula<T> _primeira;
         private CCelula<T> _ultima;
@@ -614,8 +613,39 @@ namespace AED
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    }
 
+        // Implementação explícita da interface ICollection (métodos são acessíveis apenas via interface)
+        void ICollection<T>.Add(T item) => Adiciona(item);
+
+        void ICollection<T>.Clear() => Limpar();
+
+        bool ICollection<T>.Contains(T item) => Contem(item);
+
+        #nullable restore
+        void ICollection<T>.CopyTo(T[] array, int arrayIndex)
+        {
+            if(array == null)
+                ThrowHelper.DestinoNulo(nameof(array));
+            if(arrayIndex < 0)
+                ThrowHelper.IndiceNegativo(nameof(arrayIndex));
+            if (array.Length - arrayIndex < _quantidade)
+                ThrowHelper.EspacoInsuficiente();
+            if(_quantidade == 0)
+                return;
+
+            CCelula<T> aux = _primeira.Prox;
+            for(int i = 0; i < _quantidade; i++)
+            {
+                array[arrayIndex + i] = aux.Item;
+                aux = aux.Prox;
+            }
+        }
+        #nullable disable
+
+        int ICollection<T>.Count => _quantidade;
+
+        bool ICollection<T>.IsReadOnly => false;
+    }
     #endregion
 
     #region Classe CCelulaDup<T> - representa a célula utilizada pela classe CListaDup<T>
@@ -647,7 +677,7 @@ namespace AED
     /// <summary>
     /// Implementa uma lista duplamente encadeada genérica.
     /// </summary>
-    public class CListaDup<T> : IEnumerable<T>
+    public class CListaDup<T> : IEnumerable<T>, ICollection<T>
     {
         private CCelulaDup<T> _primeira; // Referencia a primeira célula da lista (célula cabeça)
         private CCelulaDup<T> _ultima; // Referencia a última célula da lista 
@@ -976,6 +1006,37 @@ namespace AED
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        void ICollection<T>.Add(T item) => Adiciona(item);
+
+        void ICollection<T>.Clear() => Limpar();
+
+        bool ICollection<T>.Contains(T item) => Contem(item);
+
+        #nullable restore
+        void ICollection<T>.CopyTo(T[] array, int arrayIndex)
+        {
+            if(array == null)
+                ThrowHelper.DestinoNulo(nameof(array));
+            if(arrayIndex < 0)
+                ThrowHelper.IndiceNegativo(nameof(arrayIndex));
+            if (array.Length - arrayIndex < _quantidade)
+                ThrowHelper.EspacoInsuficiente();
+            if(_quantidade == 0)
+                return;
+
+            CCelulaDup<T> aux = _primeira.Prox;
+            for(int i = 0; i < _quantidade; i++)
+            {
+                array[arrayIndex + i] = aux.Item;
+                aux = aux.Prox;
+            }
+        }
+        #nullable disable
+
+        int ICollection<T>.Count => _quantidade;
+
+        bool ICollection<T>.IsReadOnly => false;
     }
     #endregion
 
@@ -1255,6 +1316,20 @@ namespace AED
         [DoesNotReturn]
         internal static void ColecaoNula(string nomeParametro) =>
             throw new ArgumentNullException(nomeParametro, "A coleção a copiar não pode ser nula.");
+
+        /// <summary>
+        /// <summary>Lança uma exceção quando o array de destino é nulo na interface ICollection das listas.</summary>
+        [DoesNotReturn]
+        internal static void DestinoNulo(string nomeParametro) =>
+            throw new ArgumentNullException(nomeParametro, "O array de destino não pode ser nulo.");
+
+        /// <summary>Lança uma exceção quando o índice de destino é negativo na interface ICollection das listas./// </summary>
+        internal static void IndiceNegativo(string nomeParametro) =>
+            throw new ArgumentOutOfRangeException(nomeParametro, "O índice de destino não pode ser negativo.");
+
+        ///<summary>Lança uma exceção se o array de destino não possuir espaço suficiente para copiar a lista através da interface ICollection.</summary>
+        internal static void EspacoInsuficiente() =>
+            throw new ArgumentException("O array de destino não possui espaço suficiente.");
     }
     #endregion
 }

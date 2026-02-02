@@ -4,19 +4,20 @@ using AED;
 class Program {
     public static void Main(string[] args)
     {
-        Console.WriteLine("Programa iniciado.");
-        CDicionario<int, int> dic = new CDicionario<int, int>();
+        CListaDup<int> lista = new CListaDup<int>();
         for(int i = 1; i <= 10; i++)
-            dic.Adiciona(i, i + 1);
+            lista.Adiciona(i);
 
-        Console.WriteLine("Imprimindo o CDicionario:");
-        foreach(CPar<int, int> kvp in dic)
-            Console.WriteLine($"{kvp.Chave}, {kvp.Valor}");
-        Dictionary<int, int> dictionary = new Dictionary<int, int>(dic);
-        Console.WriteLine("Imprimindo o novo dictionary:");
-        foreach(KeyValuePair<int, int> kvp in dictionary)
-            Console.WriteLine($"{kvp.Key}, {kvp.Value}");
-        dic.Limpar();
-        Console.WriteLine(dic.Quantidade);
+        List<int> list = new List<int>(lista);
+        Console.WriteLine($"Imprimindo a nova lista:");
+        Console.WriteLine(string.Join(", ", list));
+        Console.WriteLine($"Quantidade de itens da nova lista: {list.Count}");
+        Console.WriteLine($"Capacidade da lista: {list.Capacity}");
+        CLista<int> simples = new CLista<int>(list);
+        Console.WriteLine("Imprimindo a lista simples:");
+        Console.WriteLine(string.Join(", ", simples));
+        CListaDup<int> dupla = new CListaDup<int>(list);
+        Console.WriteLine("Imprimindo a lista dupla 2:");
+        Console.WriteLine(string.Join(", ", dupla));
     }
 }
