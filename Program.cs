@@ -4,8 +4,14 @@ using AED;
 class Program {
     public static void Main(string[] args)
     {
-        CDicionario<int, int> dicionario = new CDicionario<int, int>();
-        dicionario.Adiciona(2, 2222);
-        //Dictionary<int, int> dic = new Dictionary<int, int>(dicionario);
+        CFila<int> fila = new CFila<int>();
+        for(int i = 0; i < 10; i++)
+            fila.Enfileira(i + 1);
+
+        CPilha<int> pilha = new CPilha<int>(fila);
+        foreach(int n in pilha)
+            Console.WriteLine(pilha.Desempilha());
+
+        Console.WriteLine(string.Join(", ", fila));
     }
 }

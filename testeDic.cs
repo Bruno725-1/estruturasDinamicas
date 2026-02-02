@@ -10,6 +10,6 @@ class TesteDic
         CDicionario<string, string> copia = new CDicionario<string, string>(dic);
         Console.WriteLine(copia.RetornaValor("Rone"));
         Console.WriteLine(copia.RetornaValor("Felipe Martins"));
-        Console.WriteLine(copia.Quantidade());
+        Console.WriteLine(copia.Quantidade);
     }
 }

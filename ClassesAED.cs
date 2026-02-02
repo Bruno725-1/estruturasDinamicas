@@ -1,5 +1,5 @@
 #nullable disable
-// Código didático baseado em encadeamento com célula cabeça.
+// Código baseado em encadeamento com célula cabeça.
 // Referências nulas fazem parte do modelo.
 using System;
 using System.Collections;
@@ -37,6 +37,7 @@ namespace AED
         private CCelula<T> _frente;
         private CCelula<T> _tras;
         private int _quantidade;
+        private uint _versao; // Impede modificações durante loops foreach
 
         public CFila()
         {
@@ -65,6 +66,7 @@ namespace AED
             _tras.Prox = new CCelula<T>(valorItem);
             _tras = _tras.Prox;
             _quantidade++;
+            _versao++;
         }
 
         public T Desenfileira()
@@ -75,6 +77,7 @@ namespace AED
             _frente = _frente.Prox;
             T item = _frente.Item;
             _quantidade--;
+            _versao++;
             return item;
         }
 
@@ -96,17 +99,23 @@ namespace AED
 
         public int Quantidade => _quantidade;
 
-        public static CFila<T> ConcatenaFila(CFila<T> F1, CFila<T> F2)
+        #nullable restore
+        public static CFila<T> ConcatenaFila(CFila<T> f1, CFila<T> f2)
         {
+            if(f1 == null)
+                ThrowHelper.ColecaoNula(nameof(f1));
+            if(f2 == null)
+                ThrowHelper.ColecaoNula(nameof(f2));
+
             CFila<T> concatenada = new CFila<T>();
             //percorrer as duas filas até o final
-            for (CCelula<T> aux = F1._frente.Prox; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = f1._frente.Prox; aux != null; aux = aux.Prox)
             {
                 concatenada._tras.Prox = new CCelula<T>(aux.Item);
                 concatenada._tras = concatenada._tras.Prox;
                 concatenada._quantidade++;
             }
-            for (CCelula<T> aux = F2._frente.Prox; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = f2._frente.Prox; aux != null; aux = aux.Prox)
             {
                 concatenada._tras.Prox = new CCelula<T>(aux.Item);
                 concatenada._tras = concatenada._tras.Prox;
@@ -114,33 +123,28 @@ namespace AED
             }
             return concatenada;
         }
-
-        public int OcorrenciasDe(T elemento)
-        {
-            int ocorrencias = 0;
-            for (CCelula<T> aux = _frente.Prox; aux != null; aux = aux.Prox)
-            {
-                if (EqualityComparer<T>.Default.Equals(aux.Item, elemento))
-                    ocorrencias++;
-            }
-            return ocorrencias;
-        }
+        #nullable disable
 
         public void Limpar()
         {
-            if (_frente == _tras) return;
             while (_frente.Prox != null)
-            {
                 _frente.Prox = _frente.Prox.Prox;
-                _quantidade--;
-            }
+
+            _quantidade = 0;
             _tras = _frente;
+            _versao++;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
+            uint versao = _versao;
             for (var aux = _frente.Prox; aux != null; aux = aux.Prox)
+            {
+                if(versao != _versao)
+                    ThrowHelper.ColecaoModificada("fila");
+
                 yield return aux.Item;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -152,6 +156,7 @@ namespace AED
     {
         private CCelula<T> _topo;
         private int _quantidade;
+        private uint _versao;
 
         public CPilha() {}
 
@@ -172,6 +177,7 @@ namespace AED
         {
             _topo = new CCelula<T>(valorItem, _topo);
             _quantidade++;
+            _versao++;
         }
 
         public T Desempilha()
@@ -182,6 +188,7 @@ namespace AED
             T item = _topo.Item;
             _topo = _topo.Prox;
             _quantidade--;
+            _versao++;
             return item;
         }
 
@@ -203,37 +210,49 @@ namespace AED
 
         public int Quantidade => _quantidade;
 
-        public static CPilha<T> ConcatenaPilha(CPilha<T> P1, CPilha<T> P2)
+        #nullable restore
+        public static CPilha<T> ConcatenaPilha(CPilha<T> p1, CPilha<T> p2)
         {
+            if(p1 == null)
+                ThrowHelper.ColecaoNula(nameof(p1));
+            if(p2 == null)
+                ThrowHelper.ColecaoNula(nameof(p2));
+
             CPilha<T> concatenada = new CPilha<T>();
             //percorrer as duas pilhas até o final
-            for (CCelula<T> aux = P1._topo; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = p1._topo; aux != null; aux = aux.Prox)
             {
                 concatenada._topo = new CCelula<T>(aux.Item, concatenada._topo);
                 concatenada._quantidade++;
             }
-            for (CCelula<T> aux = P2._topo; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = p2._topo; aux != null; aux = aux.Prox)
             {
                 concatenada._topo = new CCelula<T>(aux.Item, concatenada._topo);
                 concatenada._quantidade++;
             }
             return concatenada;
         }
+        #nullable disable
 
         public void Limpar()
         {
-            if (_topo == null) return;
             while (_topo != null)
-            {
                 _topo = _topo.Prox;
-                _quantidade--;
-            }
+
+            _quantidade = 0;
+            _versao++;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
+            uint versao = _versao;
             for (var aux = _topo; aux != null; aux = aux.Prox)
+            {
+                if(versao != _versao)
+                    ThrowHelper.ColecaoModificada("pilha");
+
                 yield return aux.Item;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -243,14 +262,15 @@ namespace AED
     #region Classe CLista - Lista encadeada (simples) com célula cabeça
     public class CLista<T> : IEnumerable<T>
     {
-        private CCelula<T> Primeira;
-        private CCelula<T> Ultima;
+        private CCelula<T> _primeira;
+        private CCelula<T> _ultima;
         private int _quantidade;
+        private uint _versao;
 
         public CLista()
         {
-            Primeira = new CCelula<T>();
-            Ultima = Primeira;
+            _primeira = new CCelula<T>();
+            _ultima = _primeira;
         }
 
         #nullable restore
@@ -264,21 +284,24 @@ namespace AED
         }
         #nullable disable
 
-        public bool EstaVazia => Primeira == Ultima;
+        public bool EstaVazia => _primeira == _ultima;
 
         public void Adiciona(T valorItem)
         {
-            Ultima.Prox = new CCelula<T>(valorItem);
-            Ultima = Ultima.Prox;
+            _ultima.Prox = new CCelula<T>(valorItem);
+            _ultima = _ultima.Prox;
             _quantidade++;
+            _versao++;
         }
 
         public void InsereComeco(T valorItem)
         {
-            Primeira.Prox = new CCelula<T>(valorItem, Primeira.Prox);
-            if (Primeira.Prox.Prox == null)
-                Ultima = Primeira.Prox;
+            _primeira.Prox = new CCelula<T>(valorItem, _primeira.Prox);
+            if (_primeira.Prox.Prox == null)
+                _ultima = _primeira.Prox;
+
             _quantidade++;
+            _versao++;
         }
 
         public void InsereIndice(T valorItem, int posicao)
@@ -286,14 +309,16 @@ namespace AED
             if (posicao < 1 || posicao > _quantidade + 1)
                 ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens + 1");
 
-            CCelula<T> aux = Primeira;
+            CCelula<T> aux = _primeira;
             for (int i = 0; i < posicao - 1; i++)
                 aux = aux.Prox;
 
             aux.Prox = new CCelula<T>(valorItem, aux.Prox);
             if (aux.Prox.Prox == null)
-                Ultima = aux.Prox;
+                _ultima = aux.Prox;
+
             _quantidade++;
+            _versao++;
         }
 
         public void RemoveIndice(int posicao)
@@ -301,23 +326,26 @@ namespace AED
             if (posicao < 1 || posicao > _quantidade)
                 ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
 
-            CCelula<T> aux = Primeira;
+            CCelula<T> aux = _primeira;
             for (int i = 0; i < posicao - 1; i++)
                 aux = aux.Prox;
             aux.Prox = aux.Prox.Prox;
             if (aux.Prox == null)
-                Ultima = aux;
+                _ultima = aux;
+
             _quantidade--;
+            _versao++;
         }
 
         public void InsereAntesDe(T elementoAInserir, T referencia)
         {
-            for (CCelula<T> aux = Primeira; aux.Prox != null; aux = aux.Prox)
+            for (CCelula<T> aux = _primeira; aux.Prox != null; aux = aux.Prox)
             {
                 if (EqualityComparer<T>.Default.Equals(aux.Prox.Item, referencia))
                 {
                     aux.Prox = new CCelula<T>(elementoAInserir, aux.Prox);
                     _quantidade++;
+                    _versao++;
                     return;
                 }
             }
@@ -327,12 +355,13 @@ namespace AED
 
         public void InsereDepoisDe(T elementoAInserir, T referencia)
         {
-            for (CCelula<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
                 if (EqualityComparer<T>.Default.Equals(aux.Item, referencia))
                 {
                     aux.Prox = new CCelula<T>(elementoAInserir, aux.Prox);
                     _quantidade++;
+                    _versao++;
                     return;
                 }
             }
@@ -342,7 +371,7 @@ namespace AED
         public T[] ParaVetor()
         {
             T[] vetor = new T[_quantidade];
-            CCelula<T> aux = Primeira.Prox;
+            CCelula<T> aux = _primeira.Prox;
             for (int i = 0; i < vetor.Length; i++)
             {
                 vetor[i] = aux.Item;
@@ -354,7 +383,7 @@ namespace AED
         public int PrimeiraOcorrenciaDe(T elemento)
         {
             int indice = 1;
-            for (CCelula<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
                 if (EqualityComparer<T>.Default.Equals(aux.Item, elemento)) return indice;
                 indice++;
@@ -366,7 +395,7 @@ namespace AED
         {
             int indice = 1, ocorrencia = 0;
             bool achou = false;
-            for (CCelula<T> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            for (CCelula<T> aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
                 if (EqualityComparer<T>.Default.Equals(aux.Item, elemento))
                 {
@@ -379,6 +408,17 @@ namespace AED
             return ocorrencia;
         }
 
+        public int OcorrenciasDe(T elemento)
+        {
+            int ocorrencias = 0;
+            for (CCelula<T> aux = _primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                if (EqualityComparer<T>.Default.Equals(aux.Item, elemento))
+                    ocorrencias++;
+            }
+            return ocorrencias;
+        }
+
         public void Ordenar()
         {
             if (_quantidade < 2) return;
@@ -386,7 +426,7 @@ namespace AED
             while (houveTroca)
             {
                 houveTroca = false;
-                CCelula<T> atual = Primeira.Prox;
+                CCelula<T> atual = _primeira.Prox;
                 while (atual != null && atual.Prox != null)
                 {
                     if (Comparer<T>.Default.Compare(atual.Item, atual.Prox.Item) > 0)
@@ -399,11 +439,12 @@ namespace AED
                     atual = atual.Prox;
                 }
             }
+            _versao++;
         }
 
         public void Imprime()
         {
-            CCelula<T> aux = Primeira.Prox;
+            CCelula<T> aux = _primeira.Prox;
             while (aux != null)
             {
                 Console.WriteLine(aux.Item);
@@ -413,8 +454,8 @@ namespace AED
 
         public void ImprimeInv()
         {
-            if (Primeira.Prox != null)//se a lista não estiver vazia
-                ImprimeInv(Primeira.Prox);
+            if (_primeira.Prox != null)//se a lista não estiver vazia
+                ImprimeInv(_primeira.Prox);
         }
 
         ///<summary>
@@ -434,7 +475,7 @@ namespace AED
 
         public bool Contem(T valorItem)
         {
-            for (var aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            for (var aux = _primeira.Prox; aux != null; aux = aux.Prox)
                 if (EqualityComparer<T>.Default.Equals(aux.Item, valorItem))
                     return true;
             return false;
@@ -445,7 +486,7 @@ namespace AED
             if (posicao < 1 || posicao > _quantidade)
                 ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
 
-            var aux = Primeira.Prox;
+            var aux = _primeira.Prox;
             for (int i = 1; i < posicao; i++)
                 aux = aux.Prox;
 
@@ -457,66 +498,70 @@ namespace AED
             if (posicao < 1 || posicao > _quantidade)
                 ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens");
 
-            var aux = Primeira.Prox;
+            var aux = _primeira.Prox;
             for (int i = 1; i < posicao; i++)
                 aux = aux.Prox;
 
             aux.Item = elemento;
+            _versao++;
         }
 
         public T RetornaPrimeiro()
         {
-            if (Primeira == Ultima)
+            if (_primeira == _ultima)
                 ThrowHelper.ColecaoVazia("Lista");
 
-            return Primeira.Prox.Item;
+            return _primeira.Prox.Item;
         }
 
         public T RetornaUltimo()
         {
-            if (Primeira == Ultima)
+            if (_primeira == _ultima)
                 ThrowHelper.ColecaoVazia("Lista");
 
-            return Ultima.Item;
+            return _ultima.Item;
         }
 
         public T RemoveRetornaComeco()
         {
-            if (Primeira == Ultima)
+            if (_primeira == _ultima)
                 ThrowHelper.ColecaoVazia("Lista");
 
-            Primeira = Primeira.Prox;
+            _primeira = _primeira.Prox;
             _quantidade--;
-            return Primeira.Item;
+            _versao++;
+            return _primeira.Item;
         }
 
         public T RemoveRetornaFim()
         {
-            if (Primeira == Ultima)
+            if (_primeira == _ultima)
                 ThrowHelper.ColecaoVazia("Lista");
 
-            var aux = Primeira;
-            while (aux.Prox != Ultima)
+            var aux = _primeira;
+            while (aux.Prox != _ultima)
                 aux = aux.Prox;
 
-            var removida = Ultima.Item;
-            Ultima = aux;
-            Ultima.Prox = null;
+            var removida = _ultima.Item;
+            _ultima = aux;
+            _ultima.Prox = null;
             _quantidade--;
+            _versao++;
             return removida;
         }
 
         public bool Remove(T valorItem)
         {
-            var aux = Primeira;
+            var aux = _primeira;
             while (aux.Prox != null)
             {
                 if (EqualityComparer<T>.Default.Equals(aux.Prox.Item, valorItem))
                 {
                     aux.Prox = aux.Prox.Prox;
                     if (aux.Prox == null)
-                        Ultima = aux;
+                        _ultima = aux;
                     _quantidade--;
+                    _versao++;
                     return true;
                 }
                 aux = aux.Prox;
@@ -526,38 +571,45 @@ namespace AED
 
         public void Limpar()
         {
-            if (Primeira == Ultima) return;
-            while (Primeira.Prox != null)
-            {
-                Primeira.Prox = Primeira.Prox.Prox;
-                _quantidade--;
-            }
-            Ultima = Primeira;
+            while (_primeira.Prox != null)
+                _primeira.Prox = _primeira.Prox.Prox;
+
+            _quantidade = 0;
+            _ultima = _primeira;
+            _versao++;
         }
 
         public int Quantidade => _quantidade;
 
         public void Inverte()
         {
+            if(_quantidade < 2) return;
             T[] vet = new T[_quantidade];
-            CCelula<T> aux = Primeira.Prox;
+            CCelula<T> aux = _primeira.Prox;
             for (int i = 0; i < _quantidade; i++)
             {
                 vet[i] = aux.Item;
                 aux = aux.Prox;
             }
-            aux = Primeira.Prox;
+            aux = _primeira.Prox;
             for (int i = _quantidade - 1; i >= 0; i--)
             {
                 aux.Item = vet[i];
                 aux = aux.Prox;
             }
+            _versao++;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            for (var aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            uint versao = _versao;
+            for (var aux = _primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                if(versao != _versao)
+                    ThrowHelper.ColecaoModificada("lista");
+
                 yield return aux.Item;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -599,6 +651,7 @@ namespace AED
         private CCelulaDup<T> _primeira; // Referencia a primeira célula da lista (célula cabeça)
         private CCelulaDup<T> _ultima; // Referencia a última célula da lista 
         private int _quantidade;
+        private uint _versao;
 
         public CListaDup()
         {
@@ -651,6 +704,7 @@ namespace AED
                     atual = atual.Prox;
                 }
             }
+            _versao++;
         }
 
         public void Adiciona(T valorItem)
@@ -658,6 +712,7 @@ namespace AED
             _ultima.Prox = new CCelulaDup<T>(valorItem, _ultima, null);
             _ultima = _ultima.Prox;
             _quantidade++;
+            _versao++;
         }
 
         public void InsereComeco(T valorItem)
@@ -673,6 +728,7 @@ namespace AED
                 _primeira.Prox.Prox.Ant = _primeira.Prox;
             }
             _quantidade++;
+            _versao++;
         }
 
         public void RemoveComecoSemRetorno()
@@ -683,6 +739,7 @@ namespace AED
             _primeira = _primeira.Prox;
             _primeira.Ant = null;
             _quantidade--;
+            _versao++;
         }
 
         public void RemoveIndice(int posicao)
@@ -701,6 +758,7 @@ namespace AED
             else
                 _ultima = aux; //atualizar ponteiro Ultima
             _quantidade--;
+            _versao++;
         }
 
         public void Imprime()
@@ -757,6 +815,7 @@ namespace AED
             _ultima = _ultima.Ant;
             _ultima.Prox = null;
             _quantidade--;
+            _versao++;
         }
 
         public bool Remove(T valorItem)
@@ -781,6 +840,7 @@ namespace AED
                     else
                         _ultima = anterior;
                     _quantidade--;
+                    _versao++;
                     return true;
                 }
             }
@@ -796,6 +856,7 @@ namespace AED
             _primeira = _primeira.Prox;
             _primeira.Ant = null;
             _quantidade--;
+            _versao++;
             return aux.Item;
         }
 
@@ -808,6 +869,7 @@ namespace AED
             _ultima = _ultima.Ant;
             _ultima.Prox = null;
             _quantidade--;
+            _versao++;
             return aux.Item;
         }
 
@@ -841,6 +903,17 @@ namespace AED
             return ocorrencia;
         }
 
+        public int OcorrenciasDe(T elemento)
+        {
+            int ocorrencias = 0;
+            for (CCelulaDup<T> aux = _primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                if (EqualityComparer<T>.Default.Equals(aux.Item, elemento))
+                    ocorrencias++;
+            }
+            return ocorrencias;
+        }
+
         public void AlteraIndice(int posicao, T elemento)
         {
             if (posicao < 1 || posicao > _quantidade)
@@ -850,11 +923,12 @@ namespace AED
             for (int i = 1; i < posicao; i++)
                 aux = aux.Prox;
             aux.Item = elemento;
+            _versao++;
         }
 
         public void Limpar()
         {
-            if (_primeira == _ultima) return;
+            if(_primeira == _ultima) return;
             CCelulaDup<T> atual = _primeira.Prox;
             while (atual != null)
             {
@@ -862,10 +936,11 @@ namespace AED
                 atual.Ant = null;
                 atual.Prox = null;
                 atual = proxima;
-                _quantidade--;
             }
+            _quantidade = 0;
             _primeira.Prox = null;
             _ultima = _primeira;
+            _versao++;
         }
 
         public void Inverte()
@@ -884,12 +959,19 @@ namespace AED
                 inicio++;
                 fim--;
             }
+            _versao++;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
+            uint versao = _versao;
             for (CCelulaDup<T> aux = _primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                if(versao != _versao)
+                    ThrowHelper.ColecaoModificada("lista");
+
                 yield return aux.Item;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -905,59 +987,53 @@ namespace AED
         public TChave Chave;
         public TValor Valor;
         public CCelulaDic<TChave, TValor> Prox;
-        public CCelulaDic()
-        {
-            Chave = default(TChave);
-            Valor = default(TValor);
-            Prox = null;
-        }
+        public CCelulaDic() {}
 
         public CCelulaDic(TChave key, TValor value)
         {
             Chave = key;
             Valor = value;
-            Prox = null;
         }
 
-        public CCelulaDic(TChave key, TValor value, CCelulaDic<TChave, TValor> proxCelula)
+        public CCelulaDic(TChave key, TValor value, CCelulaDic<TChave, TValor> proxCelula) : this(key, value)
         {
-            Chave = key;
-            Valor = value;
             Prox = proxCelula;
         }
     }
     #endregion
 
     #region Classe CDicionario - implementa um dicionário chave e valor
-    public class CDicionario<TChave, TValor> : IEnumerable<CPar<TChave, TValor>>
+    public class CDicionario<TChave, TValor> : IEnumerable<CPar<TChave, TValor>>, IEnumerable<KeyValuePair<TChave, TValor>>
     {
-        private CCelulaDic<TChave, TValor> Primeira;
-        private CCelulaDic<TChave, TValor> Ultima;
-        private int Qtde = 0;
+        private CCelulaDic<TChave, TValor> _primeira;
+        private CCelulaDic<TChave, TValor> _ultima;
+        private int _quantidade;
+        private uint _versao;
+
         public CDicionario()
         {
-            Primeira = new CCelulaDic<TChave, TValor>();
-            Ultima = Primeira;
+            _primeira = new CCelulaDic<TChave, TValor>();
+            _ultima = _primeira;
         }
 
         public CDicionario(CDicionario<TChave, TValor> d)
         {
-            Primeira = new CCelulaDic<TChave, TValor>();
-            Ultima = Primeira;
-            for (var aux = d.Primeira.Prox; aux != null; aux = aux.Prox)
+            _primeira = new CCelulaDic<TChave, TValor>();
+            _ultima = _primeira;
+            for (var aux = d._primeira.Prox; aux != null; aux = aux.Prox)
             {
-                Ultima.Prox = new CCelulaDic<TChave, TValor>(aux.Chave, aux.Valor);
-                Ultima = Ultima.Prox;
-                Qtde++;
+                _ultima.Prox = new CCelulaDic<TChave, TValor>(aux.Chave, aux.Valor);
+                _ultima = _ultima.Prox;
+                _quantidade++;
             }
         }
 
-        public bool EstaVazio() => Primeira == Ultima;
+        public bool EstaVazio() => _primeira == _ultima;
 
         public void Adiciona(TChave key, TValor value)
         {
             //percorrer todo o dicionário para verificar se a chave passada como argumento já existe
-            var aux = Primeira.Prox;
+            var aux = _primeira.Prox;
             while (aux != null)
             {
                 if (EqualityComparer<TChave>.Default.Equals(aux.Chave, key))
@@ -966,22 +1042,24 @@ namespace AED
                 aux = aux.Prox;
             }
             //se chegou aqui, é porque a chave não existe
-            Ultima.Prox = new CCelulaDic<TChave, TValor>(key, value);
-            Ultima = Ultima.Prox;
-            Qtde++;
+            _ultima.Prox = new CCelulaDic<TChave, TValor>(key, value);
+            _ultima = _ultima.Prox;
+            _quantidade++;
+            _versao++;
         }
 
         public bool Remove(TChave key)
         {
-            CCelulaDic<TChave, TValor> aux = Primeira;
+            CCelulaDic<TChave, TValor> aux = _primeira;
             while (aux.Prox != null)
             {
                 if (EqualityComparer<TChave>.Default.Equals(aux.Prox.Chave, key))
                 {
                     aux.Prox = aux.Prox.Prox;
                     if (aux.Prox == null)
-                        Ultima = aux;
-                    Qtde--;
+                        _ultima = aux;
+                    _quantidade--;
+                    _versao++;
                     return true;
                 }
                 aux = aux.Prox;
@@ -991,7 +1069,7 @@ namespace AED
 
         public TValor RetornaValor(TChave key)
         {
-            CCelulaDic<TChave, TValor> aux = Primeira.Prox;
+            CCelulaDic<TChave, TValor> aux = _primeira.Prox;
             while (aux != null)
             {
                 if (EqualityComparer<TChave>.Default.Equals(aux.Chave, key))
@@ -999,30 +1077,32 @@ namespace AED
                 aux = aux.Prox;
             }
             ThrowHelper.ChaveNaoEncontrada(key);
-            return default!;
+            return default;
         }
 
         public void InsereValor(TChave key, TValor value)
         {
-            var aux = Primeira.Prox;
+            var aux = _primeira.Prox;
             while (aux != null)
             {
                 if (EqualityComparer<TChave>.Default.Equals(aux.Chave, key))
                 {
                     aux.Valor = value;
+                    _versao++;
                     return;
                 }
                 aux = aux.Prox;
             }
             //se percorreu todo o loop, é porque a chave passada por parâmetro não foi encontrada
-            Ultima.Prox = new CCelulaDic<TChave, TValor>(key, value);
-            Ultima = Ultima.Prox;
+            _ultima.Prox = new CCelulaDic<TChave, TValor>(key, value);
+            _ultima = _ultima.Prox;
+            _versao++;
         }
 
         public TChave[] Chaves()
         {
-            TChave[] vetor = new TChave[Qtde];
-            var aux = Primeira.Prox;
+            TChave[] vetor = new TChave[_quantidade];
+            var aux = _primeira.Prox;
             for (int i = 0; i < vetor.Length; i++)
             {
                 vetor[i] = aux.Chave;
@@ -1033,8 +1113,8 @@ namespace AED
 
         public TValor[] Valores()
         {
-            TValor[] vetor = new TValor[Qtde];
-            var aux = Primeira.Prox;
+            TValor[] vetor = new TValor[_quantidade];
+            var aux = _primeira.Prox;
             for (int i = 0; i < vetor.Length; i++)
             {
                 vetor[i] = aux.Valor;
@@ -1043,11 +1123,11 @@ namespace AED
             return vetor;
         }
 
-        public int Quantidade => Qtde;
+        public int Quantidade => _quantidade;
 
         public bool ContemChave(TChave key)
         {
-            CCelulaDic<TChave, TValor> aux = Primeira.Prox;
+            CCelulaDic<TChave, TValor> aux = _primeira.Prox;
             bool achou = false;
             while (aux != null && !achou)
             {
@@ -1059,7 +1139,7 @@ namespace AED
 
         public bool ContemValor(TValor value)
         {
-            CCelulaDic<TChave, TValor> aux = Primeira.Prox;
+            CCelulaDic<TChave, TValor> aux = _primeira.Prox;
             bool achou = false;
             while (aux != null && !achou)
             {
@@ -1071,12 +1151,12 @@ namespace AED
 
         public void Ordenar() // Implementa um método de ordenação por chaves
         {
-            if (Qtde < 2) return;
+            if (_quantidade < 2) return;
             bool houveTroca = true;
             while (houveTroca)
             {
                 houveTroca = false;
-                for (var atual = Primeira.Prox; atual != null && atual.Prox != null; atual = atual.Prox)
+                for (var atual = _primeira.Prox; atual != null && atual.Prox != null; atual = atual.Prox)
                 {
                     if (Comparer<TChave>.Default.Compare(atual.Chave, atual.Prox.Chave) > 0)
                     {
@@ -1090,26 +1170,39 @@ namespace AED
                     }
                 }
             }
+            _versao++;
         }
 
         public void Limpar()
         {
-            if (Primeira == Ultima) return;
-            while (Primeira.Prox != null)
-            {
-                Primeira.Prox = Primeira.Prox.Prox;
-                Qtde--;
-            }
-            Ultima = Primeira;
+            while (_primeira.Prox != null)
+                _primeira.Prox = _primeira.Prox.Prox;
+
+            _ultima = _primeira;
+            _versao++;
         }
 
         public IEnumerator<CPar<TChave, TValor>> GetEnumerator()
         {
-            for (CCelulaDic<TChave, TValor> aux = Primeira.Prox; aux != null; aux = aux.Prox)
+            uint versao = _versao;
+            for (CCelulaDic<TChave, TValor> aux = _primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                if(versao != _versao)
+                    ThrowHelper.ColecaoModificada("coleção");
+
                 yield return new CPar<TChave, TValor>(aux.Chave, aux.Valor);
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        // Implementação explícita da interface IEnumerable com KeyValuePair para fins de interoperabilidade.
+        // A implementação desta interface permite copiar o CDicionario para outras classes através de construtoras que aceitem IEnumerable<KeyValuePair<TChave, TValor>>.
+        IEnumerator<KeyValuePair<TChave, TValor>> IEnumerable<KeyValuePair<TChave, TValor>>.GetEnumerator()
+        {
+            foreach(CPar<TChave, TValor> p in this)
+                yield return new KeyValuePair<TChave, TValor>();
+        }
     }
     #endregion
 
