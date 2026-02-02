@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace AED
 {
@@ -994,11 +995,6 @@ namespace AED
             Chave = key;
             Valor = value;
         }
-
-        public CCelulaDic(TChave key, TValor value, CCelulaDic<TChave, TValor> proxCelula) : this(key, value)
-        {
-            Prox = proxCelula;
-        }
     }
     #endregion
 
@@ -1016,17 +1012,16 @@ namespace AED
             _ultima = _primeira;
         }
 
-        public CDicionario(CDicionario<TChave, TValor> d)
+        #nullable restore
+        public CDicionario(IEnumerable<KeyValuePair<TChave, TValor>> colecao) : this()
         {
-            _primeira = new CCelulaDic<TChave, TValor>();
-            _ultima = _primeira;
-            for (var aux = d._primeira.Prox; aux != null; aux = aux.Prox)
-            {
-                _ultima.Prox = new CCelulaDic<TChave, TValor>(aux.Chave, aux.Valor);
-                _ultima = _ultima.Prox;
-                _quantidade++;
-            }
+            if(colecao == null)
+                ThrowHelper.ColecaoNula(nameof(colecao));
+
+            foreach(KeyValuePair<TChave, TValor> kvp in colecao)
+                Adiciona(kvp.Key, kvp.Value);
         }
+        #nullable disable
 
         public bool EstaVazio() => _primeira == _ultima;
 
@@ -1041,7 +1036,7 @@ namespace AED
 
                 aux = aux.Prox;
             }
-            //se chegou aqui, é porque a chave não existe
+            // Se chegou aqui, é porque a chave não existe
             _ultima.Prox = new CCelulaDic<TChave, TValor>(key, value);
             _ultima = _ultima.Prox;
             _quantidade++;
@@ -1076,25 +1071,26 @@ namespace AED
                     return aux.Valor;
                 aux = aux.Prox;
             }
+            //se percorreu todo o loop, é porque a chave passada por parâmetro não foi encontrada
             ThrowHelper.ChaveNaoEncontrada(key);
             return default;
         }
 
-        public void InsereValor(TChave key, TValor value)
+        // Altera o valor associado à uma chave. Se a chave não existir, ela será criada.
+        public void InsereValor(TChave chave, TValor valor)
         {
             var aux = _primeira.Prox;
             while (aux != null)
             {
-                if (EqualityComparer<TChave>.Default.Equals(aux.Chave, key))
+                if (EqualityComparer<TChave>.Default.Equals(aux.Chave, chave))
                 {
-                    aux.Valor = value;
+                    aux.Valor = valor;
                     _versao++;
                     return;
                 }
                 aux = aux.Prox;
             }
-            //se percorreu todo o loop, é porque a chave passada por parâmetro não foi encontrada
-            _ultima.Prox = new CCelulaDic<TChave, TValor>(key, value);
+            _ultima.Prox = new CCelulaDic<TChave, TValor>(chave, valor);
             _ultima = _ultima.Prox;
             _versao++;
         }
@@ -1178,6 +1174,7 @@ namespace AED
             while (_primeira.Prox != null)
                 _primeira.Prox = _primeira.Prox.Prox;
 
+            _quantidade = 0;
             _ultima = _primeira;
             _versao++;
         }
@@ -1200,8 +1197,14 @@ namespace AED
         // A implementação desta interface permite copiar o CDicionario para outras classes através de construtoras que aceitem IEnumerable<KeyValuePair<TChave, TValor>>.
         IEnumerator<KeyValuePair<TChave, TValor>> IEnumerable<KeyValuePair<TChave, TValor>>.GetEnumerator()
         {
-            foreach(CPar<TChave, TValor> p in this)
-                yield return new KeyValuePair<TChave, TValor>();
+            uint versao = _versao;
+            for(CCelulaDic<TChave, TValor> aux= _primeira.Prox; aux != null; aux = aux.Prox)
+            {
+                if(versao != _versao)
+                    ThrowHelper.ColecaoModificada("coleção");
+
+                yield return new KeyValuePair<TChave, TValor>(aux.Chave, aux.Valor);
+            }
         }
     }
     #endregion

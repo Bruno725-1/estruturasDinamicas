@@ -4,14 +4,19 @@ using AED;
 class Program {
     public static void Main(string[] args)
     {
-        CFila<int> fila = new CFila<int>();
-        for(int i = 0; i < 10; i++)
-            fila.Enfileira(i + 1);
+        Console.WriteLine("Programa iniciado.");
+        CDicionario<int, int> dic = new CDicionario<int, int>();
+        for(int i = 1; i <= 10; i++)
+            dic.Adiciona(i, i + 1);
 
-        CPilha<int> pilha = new CPilha<int>(fila);
-        foreach(int n in pilha)
-            Console.WriteLine(pilha.Desempilha());
-
-        Console.WriteLine(string.Join(", ", fila));
+        Console.WriteLine("Imprimindo o CDicionario:");
+        foreach(CPar<int, int> kvp in dic)
+            Console.WriteLine($"{kvp.Chave}, {kvp.Valor}");
+        Dictionary<int, int> dictionary = new Dictionary<int, int>(dic);
+        Console.WriteLine("Imprimindo o novo dictionary:");
+        foreach(KeyValuePair<int, int> kvp in dictionary)
+            Console.WriteLine($"{kvp.Key}, {kvp.Value}");
+        dic.Limpar();
+        Console.WriteLine(dic.Quantidade);
     }
 }

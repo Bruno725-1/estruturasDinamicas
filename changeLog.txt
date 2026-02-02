@@ -1,0 +1,8 @@
+Todas as classes agora têm atributo de versionamento para lançar exceção quando modificações são detectadas durante loops foreach.
+Remoção da construtora que recebe 3 parâmetros da CCelulaDic (TChave, TValor e proxCelula), uma vez que tal construtora não era utilizada.
+O método InsereValor do CDicionario apartir de agora cria a chave caso ela não exista, ao invés de lançar exceção.
+O CDicionario implementa a interface IEnumerable<KeyValuePair<TChave, TValor>> que permite copiar um CDicionario para qualquer coleção que tenha uma construtora que aceite esta interface.
+A nova construtora do CDicionario que copia conteúdo de outra coleção também funciona com a interface IEnumerable<KeyValuePair<TChave, TValor>>. Esta interface noentanto, fica disponível apenas quando um dicionário é acessado pela interface, portanto:
+CDicionario<string, int> dicionario = new CDicionario<string, int>();
+foreach(KeyValuePair kvp in dicionario)
+não compila pois publicamente, o CDicionario continua utilizando a classe CPar em seu enumerador.
