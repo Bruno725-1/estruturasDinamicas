@@ -1153,6 +1153,7 @@ namespace AED
             }
             _ultima.Prox = new CCelulaDic<TChave, TValor>(chave, valor);
             _ultima = _ultima.Prox;
+            _quantidade++;
             _versao++;
         }
 
