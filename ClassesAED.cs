@@ -17,7 +17,7 @@ namespace AED
         public T Item;
         public CCelula<T> Prox;
 
-        public CCelula() {}
+        public CCelula() { }
 
         public CCelula(T valorItem)
         {
@@ -51,10 +51,10 @@ namespace AED
         #nullable restore
         public CFila(IEnumerable<T> colecao) : this()
         {
-            if(colecao == null)
+            if (colecao == null)
                 ThrowHelper.ColecaoNula(nameof(colecao));
 
-            foreach(T item in colecao)
+            foreach (T item in colecao)
                 Enfileira(item);
         }
         #nullable disable
@@ -99,12 +99,12 @@ namespace AED
 
         public int Quantidade => _quantidade;
 
-        #nullable restore
+#nullable restore
         public static CFila<T> ConcatenaFila(CFila<T> f1, CFila<T> f2)
         {
-            if(f1 == null)
+            if (f1 == null)
                 ThrowHelper.ColecaoNula(nameof(f1));
-            if(f2 == null)
+            if (f2 == null)
                 ThrowHelper.ColecaoNula(nameof(f2));
 
             CFila<T> concatenada = new CFila<T>();
@@ -123,7 +123,7 @@ namespace AED
             }
             return concatenada;
         }
-        #nullable disable
+#nullable disable
 
         public void Limpar()
         {
@@ -140,7 +140,7 @@ namespace AED
             uint versao = _versao;
             for (var aux = _frente.Prox; aux != null; aux = aux.Prox)
             {
-                if(versao != _versao)
+                if (versao != _versao)
                     ThrowHelper.ColecaoModificada("fila");
 
                 yield return aux.Item;
@@ -158,18 +158,18 @@ namespace AED
         private int _quantidade;
         private uint _versao;
 
-        public CPilha() {}
+        public CPilha() { }
 
-        #nullable restore
+#nullable restore
         public CPilha(IEnumerable<T> colecao)
         {
-            if(colecao == null)
+            if (colecao == null)
                 ThrowHelper.ColecaoNula(nameof(colecao));
 
-            foreach(T item in colecao)
+            foreach (T item in colecao)
                 Empilha(item);
         }
-        #nullable disable
+#nullable disable
 
         public bool EstaVazia => _topo == null;
 
@@ -210,12 +210,12 @@ namespace AED
 
         public int Quantidade => _quantidade;
 
-        #nullable restore
+#nullable restore
         public static CPilha<T> ConcatenaPilha(CPilha<T> p1, CPilha<T> p2)
         {
-            if(p1 == null)
+            if (p1 == null)
                 ThrowHelper.ColecaoNula(nameof(p1));
-            if(p2 == null)
+            if (p2 == null)
                 ThrowHelper.ColecaoNula(nameof(p2));
 
             CPilha<T> concatenada = new CPilha<T>();
@@ -232,7 +232,7 @@ namespace AED
             }
             return concatenada;
         }
-        #nullable disable
+#nullable disable
 
         public void Limpar()
         {
@@ -248,7 +248,7 @@ namespace AED
             uint versao = _versao;
             for (var aux = _topo; aux != null; aux = aux.Prox)
             {
-                if(versao != _versao)
+                if (versao != _versao)
                     ThrowHelper.ColecaoModificada("pilha");
 
                 yield return aux.Item;
@@ -273,16 +273,16 @@ namespace AED
             _ultima = _primeira;
         }
 
-        #nullable restore
+#nullable restore
         public CLista(IEnumerable<T> colecao) : this()
         {
-            if(colecao == null)
+            if (colecao == null)
                 ThrowHelper.ColecaoNula(nameof(colecao));
 
-            foreach(T item in colecao)
+            foreach (T item in colecao)
                 Adiciona(item);
         }
-        #nullable disable
+#nullable disable
 
         public bool EstaVazia => _primeira == _ultima;
 
@@ -583,7 +583,7 @@ namespace AED
 
         public void Inverte()
         {
-            if(_quantidade < 2) return;
+            if (_quantidade < 2) return;
             T[] vet = new T[_quantidade];
             CCelula<T> aux = _primeira.Prox;
             for (int i = 0; i < _quantidade; i++)
@@ -605,7 +605,7 @@ namespace AED
             uint versao = _versao;
             for (var aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
-                if(versao != _versao)
+                if (versao != _versao)
                     ThrowHelper.ColecaoModificada("lista");
 
                 yield return aux.Item;
@@ -621,26 +621,26 @@ namespace AED
 
         bool ICollection<T>.Contains(T item) => Contem(item);
 
-        #nullable restore
+#nullable restore
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
-            if(array == null)
+            if (array == null)
                 ThrowHelper.DestinoNulo(nameof(array));
-            if(arrayIndex < 0)
+            if (arrayIndex < 0)
                 ThrowHelper.IndiceNegativo(nameof(arrayIndex));
             if (array.Length - arrayIndex < _quantidade)
                 ThrowHelper.EspacoInsuficiente();
-            if(_quantidade == 0)
+            if (_quantidade == 0)
                 return;
 
             CCelula<T> aux = _primeira.Prox;
-            for(int i = 0; i < _quantidade; i++)
+            for (int i = 0; i < _quantidade; i++)
             {
                 array[arrayIndex + i] = aux.Item;
                 aux = aux.Prox;
             }
         }
-        #nullable disable
+#nullable disable
 
         int ICollection<T>.Count => _quantidade;
 
@@ -648,9 +648,9 @@ namespace AED
     }
     #endregion
 
-    #region Classe CCelulaDup<T> - representa a célula utilizada pela classe CListaDup<T>
+    #region Classe CCelulaDup<T> - representa a célula utilizada pelas classes CListaDup<T> e CDeque<T>
     /// <summary>
-    /// Classe utilizada pela classe CListaDup<T>
+    /// Classe utilizada pelas classes CListaDup<T> e CDeque<T>
     /// </summary>
     public class CCelulaDup<T>
     {
@@ -658,7 +658,7 @@ namespace AED
         public CCelulaDup<T> Ant; // Referencia a célula anterior
         public CCelulaDup<T> Prox; // Referencia a próxima célula
 
-        public CCelulaDup() {}
+        public CCelulaDup() { }
 
         public CCelulaDup(T valorItem)
         {
@@ -690,16 +690,16 @@ namespace AED
             _ultima = _primeira;
         }
 
-        #nullable restore
+#nullable restore
         public CListaDup(IEnumerable<T> colecao) : this()
         {
-            if(colecao == null)
+            if (colecao == null)
                 ThrowHelper.ColecaoNula(nameof(colecao));
 
-            foreach(T item in colecao)
+            foreach (T item in colecao)
                 Adiciona(item);
         }
-        #nullable disable
+#nullable disable
 
         public bool EstaVazia => _primeira == _ultima;
 
@@ -959,7 +959,7 @@ namespace AED
 
         public void Limpar()
         {
-            if(_primeira == _ultima) return;
+            if (_primeira == _ultima) return;
             CCelulaDup<T> atual = _primeira.Prox;
             while (atual != null)
             {
@@ -998,7 +998,7 @@ namespace AED
             uint versao = _versao;
             for (CCelulaDup<T> aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
-                if(versao != _versao)
+                if (versao != _versao)
                     ThrowHelper.ColecaoModificada("lista");
 
                 yield return aux.Item;
@@ -1013,30 +1013,230 @@ namespace AED
 
         bool ICollection<T>.Contains(T item) => Contem(item);
 
-        #nullable restore
+#nullable restore
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
-            if(array == null)
+            if (array == null)
                 ThrowHelper.DestinoNulo(nameof(array));
-            if(arrayIndex < 0)
+            if (arrayIndex < 0)
                 ThrowHelper.IndiceNegativo(nameof(arrayIndex));
             if (array.Length - arrayIndex < _quantidade)
                 ThrowHelper.EspacoInsuficiente();
-            if(_quantidade == 0)
+            if (_quantidade == 0)
                 return;
 
             CCelulaDup<T> aux = _primeira.Prox;
-            for(int i = 0; i < _quantidade; i++)
+            for (int i = 0; i < _quantidade; i++)
             {
                 array[arrayIndex + i] = aux.Item;
                 aux = aux.Prox;
             }
         }
-        #nullable disable
+#nullable disable
 
         int ICollection<T>.Count => _quantidade;
 
         bool ICollection<T>.IsReadOnly => false;
+    }
+    #endregion
+
+    #region Classe CDeque<T> - implementa uma coleção que funciona como uma fila e como uma pilha
+    ///<summary>
+    /// Implementa uma classe que funciona como fila e pilha ao mesmo tempo, permitindo que itens sejam inseridos e removidos em ambas as extremidades.
+    /// </summary>
+    public class CDeque<T> : IEnumerable<T>
+    {
+        private CCelulaDup<T> _esq; // Referencia o lado esquerdo do deque
+        private CCelulaDup<T> _dir; // Referencia o lado direito do deque
+        private int _quantidade;
+        private uint _versao;
+
+        public CDeque() { }
+
+#nullable restore
+        public CDeque(IEnumerable<T> colecao)
+        {
+            if (colecao == null)
+                ThrowHelper.ColecaoNula(nameof(colecao));
+
+            foreach (T item in colecao)
+                AdicionaDireito(item);
+        }
+#nullable disable
+
+        public void AdicionaDireito(T elemento)
+        {
+            CCelulaDup<T> nova = new CCelulaDup<T>(elemento, _dir, null);
+            if (_dir != null)
+                _dir.Prox = nova; // liga a célula antiga à nova
+            else
+                _esq = nova; // deque estava vazio
+
+            _dir = nova; // atualiza o ponteiro do deque
+            _quantidade++;
+            _versao++;
+        }
+
+        public void AdicionaEsquerdo(T elemento)
+        {
+            CCelulaDup<T> nova = new CCelulaDup<T>(elemento, null, _esq);
+            if (_esq != null)
+                _esq.Ant = nova;
+            else
+                _dir = nova;
+
+            _esq = nova;
+            _quantidade++;
+            _versao++;
+        }
+
+        public T RemoveRetornaEsquerdo()
+        {
+            if (_esq == null)
+                ThrowHelper.ColecaoVazia("Coleção");
+
+            T item = _esq.Item;
+            if (_esq.Prox != null)
+            {
+                _esq = _esq.Prox;
+                _esq.Ant = null;
+            }
+            else
+            {
+                _esq = null;
+                _dir = null;
+            }
+            _quantidade--;
+            _versao++;
+            return item;
+        }
+
+        public T RemoveRetornaDireito()
+        {
+            if(_dir == null)
+                ThrowHelper.ColecaoVazia("Coleção");
+
+            T item = _dir.Item;
+            if(_dir.Ant != null)
+            {
+                _dir = _dir.Ant;
+                _dir.Prox = null;
+            }
+            else
+            {
+                _dir = null;
+                _esq = null;
+            }
+            _quantidade--;
+            _versao++;
+            return item;
+        }
+
+        public T RetornaEsquerdo()
+        {
+            if(_esq == null)
+                ThrowHelper.ColecaoVazia("Coleção");
+
+            return _esq.Item;
+        }
+
+        public T RetornaDireito()
+        {
+            if(_dir == null)
+                ThrowHelper.ColecaoVazia("Coleção");
+
+            return _dir.Item;
+        }
+
+        // Copia o conteúdo de um deque para um vetor e o retorna.
+        // Os itens são copiados da esquerda para a direita.
+        public T[] ParaVetor()
+        {
+            T[] vetor = new T[_quantidade];
+            CCelulaDup<T> aux = _esq;
+            for(int i = 0; i < _quantidade; i++)
+            {
+                vetor[i] = aux.Item;
+                aux = aux.Prox;
+            }
+            return vetor;
+        }
+
+        // Copia o conteúdo de dois deques recebidos por parâmetro para um único e o retorna.
+        // A ordem de cópia e adição dos itens ao novo deque é da esquerda para a direita, bem como a do enumerador desta classe.
+        #nullable restore
+        public static CDeque<T> ConcatenaDeque(CDeque<T> d1, CDeque<T> d2)
+        {
+            if(d1 == null)
+                ThrowHelper.ColecaoNula(nameof(d1));
+            if(d2 == null)
+                ThrowHelper.ColecaoNula(nameof(d2));
+
+            CDeque<T> concatenado = new CDeque<T>();
+            foreach(T item in d1)
+                concatenado.AdicionaDireito(item);
+            foreach(T item in d2)
+                concatenado.AdicionaDireito(item);
+
+            return concatenado;
+        }
+        #nullable disable
+
+        public bool Contem(T elemento)
+        {
+            bool achou = false;
+            for (CCelulaDup<T> aux = _esq; aux != null && !achou; aux = aux.Prox)
+                achou = EqualityComparer<T>.Default.Equals(aux.Item, elemento);
+            return achou;
+        }
+
+        public void Limpar()
+        {
+            if (_esq == null) return;
+            CCelulaDup<T> atual = _esq;
+            while (atual != null)
+            {
+                CCelulaDup<T> proxima = atual.Prox;
+                atual.Ant = null;
+                atual.Prox = null;
+                atual = proxima;
+            }
+            _esq = null;
+            _dir = null;
+            _quantidade = 0;
+            _versao++;
+        }
+
+        public bool EstaVazio => _quantidade == 0;
+
+        public int Quantidade => _quantidade;
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            uint versao = _versao;
+            for (CCelulaDup<T> aux = _esq; aux != null; aux = aux.Prox)
+            {
+                if (versao != _versao)
+                    ThrowHelper.ColecaoModificada("coleção");
+
+                yield return aux.Item;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        // Possibilita iteração no deque de forma reversa (da direita para a esquerda)
+        public IEnumerable<T> EnumerarReverso()
+        {
+            uint versao = _versao;
+            for(CCelulaDup<T> aux = _dir; aux != null; aux = aux.Ant)
+            {
+                if(versao != _versao)
+                    ThrowHelper.ColecaoModificada("coleção");
+
+                yield return aux.Item;
+            }
+        }
     }
     #endregion
 
@@ -1049,7 +1249,7 @@ namespace AED
         public TChave Chave;
         public TValor Valor;
         public CCelulaDic<TChave, TValor> Prox;
-        public CCelulaDic() {}
+        public CCelulaDic() { }
 
         public CCelulaDic(TChave key, TValor value)
         {
@@ -1073,16 +1273,16 @@ namespace AED
             _ultima = _primeira;
         }
 
-        #nullable restore
+#nullable restore
         public CDicionario(IEnumerable<KeyValuePair<TChave, TValor>> colecao) : this()
         {
-            if(colecao == null)
+            if (colecao == null)
                 ThrowHelper.ColecaoNula(nameof(colecao));
 
-            foreach(KeyValuePair<TChave, TValor> kvp in colecao)
+            foreach (KeyValuePair<TChave, TValor> kvp in colecao)
                 Adiciona(kvp.Key, kvp.Value);
         }
-        #nullable disable
+#nullable disable
 
         public bool EstaVazio() => _primeira == _ultima;
 
@@ -1246,7 +1446,7 @@ namespace AED
             uint versao = _versao;
             for (CCelulaDic<TChave, TValor> aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
-                if(versao != _versao)
+                if (versao != _versao)
                     ThrowHelper.ColecaoModificada("coleção");
 
                 yield return new CPar<TChave, TValor>(aux.Chave, aux.Valor);
@@ -1260,9 +1460,9 @@ namespace AED
         IEnumerator<KeyValuePair<TChave, TValor>> IEnumerable<KeyValuePair<TChave, TValor>>.GetEnumerator()
         {
             uint versao = _versao;
-            for(CCelulaDic<TChave, TValor> aux= _primeira.Prox; aux != null; aux = aux.Prox)
+            for (CCelulaDic<TChave, TValor> aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
-                if(versao != _versao)
+                if (versao != _versao)
                     ThrowHelper.ColecaoModificada("coleção");
 
                 yield return new KeyValuePair<TChave, TValor>(aux.Chave, aux.Valor);

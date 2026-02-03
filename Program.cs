@@ -6,20 +6,45 @@ class Program
 {
     static void Main()
     {
-        CDicionario<string, string> cidades = new CDicionario<string, string>();
-        cidades.InsereValor("Salvador", "Bahia");
-        cidades.InsereValor("São Paulo", "São Paulo");
-        cidades.InsereValor("Ribeirão Preto", "São Paulo");
-        cidades.InsereValor("Carangola", "Minas Gerais");
-        cidades.InsereValor("Caputira", "Minas Gerais");
-        cidades.InsereValor("Belo Horizonte", "Minas Gerais");
-        cidades.InsereValor("Rio de Janeiro", "Rio de Janeiro");
-        cidades.InsereValor("Manaus", "Amazonas");
-        cidades.InsereValor("Manaus", "Macapá");
-        cidades.InsereValor("Salvador", "Tróia");
-        foreach(CPar<string, string> kvp in cidades)
-            Console.WriteLine($"{kvp.Chave}, {kvp.Valor}");
+        CDeque<int> deque = new CDeque<int>();
+        CDeque<int> d2 = new CDeque<int>();
+        Console.WriteLine("Escolha uma opção:");
+        Console.WriteLine("1: Adicionar do lado direito.");
+        Console.WriteLine("2: Adicionar do lado esquerdo.");
+        Console.WriteLine("3: Remover e retornar esquerdo");
+        Console.WriteLine("4: Remover e retornar direito");
+        Console.WriteLine("0: Sair.");
+        bool rodando = true;
+        while (rodando)
+        {
+            int opcao = int.Parse(Console.ReadLine());
+            switch (opcao)
+            {
+                case 1:
+                    deque.AdicionaDireito(int.Parse(Console.ReadLine()));
+                    break;
+                case 2:
+                    deque.AdicionaEsquerdo(int.Parse(Console.ReadLine()));
+                    break;
+                case 3:
+                    d2.AdicionaDireito(int.Parse(Console.ReadLine()));
+                    break;
+                case 4:
+                    d2.AdicionaEsquerdo(int.Parse(Console.ReadLine()));
+                    break;
+                case 0:
+                    rodando = false;
+                    break;
+            }
+        }
+        Console.WriteLine("Iterando sobre o deque concatenado:");
+        CDeque<int> concatenado = CDeque<int>.ConcatenaDeque(deque, d2);
+        foreach(int n in concatenado)
+            Console.Write($"{n}, ");
 
-        Console.WriteLine($"Quantidade de itens: {cidades.Quantidade}");
+        Console.WriteLine();
+        Console.WriteLine("Iterando inversamente sobre o deque concatenado:");
+        foreach(int n in concatenado.EnumerarReverso())
+            Console.Write($"{n}, ");
     }
 }
