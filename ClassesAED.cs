@@ -48,7 +48,7 @@ namespace AED
         // Copia o conteúdo de uma coleção recebida como parâmetro.
         // Antes de copiar a coleção, o construtor inicializa a célula cabeça através do encadeamento.
         // Para que o compilador gere warnings corretamente em caso de coleções possivelmente nulas, reativei os avisos de nulabilidade.
-        #nullable restore
+#nullable restore
         public CFila(IEnumerable<T> colecao) : this()
         {
             if (colecao == null)
@@ -57,7 +57,7 @@ namespace AED
             foreach (T item in colecao)
                 Enfileira(item);
         }
-        #nullable disable
+#nullable disable
 
         public bool EstaVazia => _frente == _tras;
 
@@ -141,7 +141,7 @@ namespace AED
             for (var aux = _frente.Prox; aux != null; aux = aux.Prox)
             {
                 if (versao != _versao)
-                    ThrowHelper.ColecaoModificada("fila");
+                    ThrowHelper.ColecaoModificada();
 
                 yield return aux.Item;
             }
@@ -249,7 +249,7 @@ namespace AED
             for (var aux = _topo; aux != null; aux = aux.Prox)
             {
                 if (versao != _versao)
-                    ThrowHelper.ColecaoModificada("pilha");
+                    ThrowHelper.ColecaoModificada();
 
                 yield return aux.Item;
             }
@@ -600,13 +600,31 @@ namespace AED
             _versao++;
         }
 
+#nullable restore
+        public static CLista<T> ConcatenaLista(CLista<T> l1, CLista<T> l2)
+        {
+            if (l1 == null)
+                ThrowHelper.ColecaoNula(nameof(l1));
+            if (l2 == null)
+                ThrowHelper.ColecaoNula(nameof(l2));
+
+            CLista<T> concatenada = new CLista<T>();
+            foreach (T item in l1)
+                concatenada.Adiciona(item);
+            foreach (T item in l2)
+                concatenada.Adiciona(item);
+
+            return concatenada;
+        }
+#nullable disable
+
         public IEnumerator<T> GetEnumerator()
         {
             uint versao = _versao;
             for (var aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
                 if (versao != _versao)
-                    ThrowHelper.ColecaoModificada("lista");
+                    ThrowHelper.ColecaoModificada();
 
                 yield return aux.Item;
             }
@@ -993,13 +1011,31 @@ namespace AED
             _versao++;
         }
 
+#nullable restore
+        public static CListaDup<T> ConcatenaLista(CListaDup<T> l1, CListaDup<T> l2)
+        {
+            if (l1 == null)
+                ThrowHelper.ColecaoNula(nameof(l1));
+            if (l2 == null)
+                ThrowHelper.ColecaoNula(nameof(l2));
+
+            CListaDup<T> concatenada = new CListaDup<T>();
+            foreach (T item in l1)
+                concatenada.Adiciona(item);
+            foreach (T item in l2)
+                concatenada.Adiciona(item);
+
+            return concatenada;
+        }
+#nullable disable
+
         public IEnumerator<T> GetEnumerator()
         {
             uint versao = _versao;
             for (CCelulaDup<T> aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
                 if (versao != _versao)
-                    ThrowHelper.ColecaoModificada("lista");
+                    ThrowHelper.ColecaoModificada();
 
                 yield return aux.Item;
             }
@@ -1113,11 +1149,11 @@ namespace AED
 
         public T RemoveRetornaDireito()
         {
-            if(_dir == null)
+            if (_dir == null)
                 ThrowHelper.ColecaoVazia("Coleção");
 
             T item = _dir.Item;
-            if(_dir.Ant != null)
+            if (_dir.Ant != null)
             {
                 _dir = _dir.Ant;
                 _dir.Prox = null;
@@ -1134,7 +1170,7 @@ namespace AED
 
         public T RetornaEsquerdo()
         {
-            if(_esq == null)
+            if (_esq == null)
                 ThrowHelper.ColecaoVazia("Coleção");
 
             return _esq.Item;
@@ -1142,7 +1178,7 @@ namespace AED
 
         public T RetornaDireito()
         {
-            if(_dir == null)
+            if (_dir == null)
                 ThrowHelper.ColecaoVazia("Coleção");
 
             return _dir.Item;
@@ -1154,7 +1190,7 @@ namespace AED
         {
             T[] vetor = new T[_quantidade];
             CCelulaDup<T> aux = _esq;
-            for(int i = 0; i < _quantidade; i++)
+            for (int i = 0; i < _quantidade; i++)
             {
                 vetor[i] = aux.Item;
                 aux = aux.Prox;
@@ -1164,23 +1200,23 @@ namespace AED
 
         // Copia o conteúdo de dois deques recebidos por parâmetro para um único e o retorna.
         // A ordem de cópia e adição dos itens ao novo deque é da esquerda para a direita, bem como a do enumerador desta classe.
-        #nullable restore
+#nullable restore
         public static CDeque<T> ConcatenaDeque(CDeque<T> d1, CDeque<T> d2)
         {
-            if(d1 == null)
+            if (d1 == null)
                 ThrowHelper.ColecaoNula(nameof(d1));
-            if(d2 == null)
+            if (d2 == null)
                 ThrowHelper.ColecaoNula(nameof(d2));
 
             CDeque<T> concatenado = new CDeque<T>();
-            foreach(T item in d1)
+            foreach (T item in d1)
                 concatenado.AdicionaDireito(item);
-            foreach(T item in d2)
+            foreach (T item in d2)
                 concatenado.AdicionaDireito(item);
 
             return concatenado;
         }
-        #nullable disable
+#nullable disable
 
         public bool Contem(T elemento)
         {
@@ -1207,7 +1243,7 @@ namespace AED
             _versao++;
         }
 
-        public bool EstaVazio => _quantidade == 0;
+        public bool EstaVazio => _esq == null;
 
         public int Quantidade => _quantidade;
 
@@ -1217,7 +1253,7 @@ namespace AED
             for (CCelulaDup<T> aux = _esq; aux != null; aux = aux.Prox)
             {
                 if (versao != _versao)
-                    ThrowHelper.ColecaoModificada("coleção");
+                    ThrowHelper.ColecaoModificada();
 
                 yield return aux.Item;
             }
@@ -1229,10 +1265,10 @@ namespace AED
         public IEnumerable<T> EnumerarReverso()
         {
             uint versao = _versao;
-            for(CCelulaDup<T> aux = _dir; aux != null; aux = aux.Ant)
+            for (CCelulaDup<T> aux = _dir; aux != null; aux = aux.Ant)
             {
-                if(versao != _versao)
-                    ThrowHelper.ColecaoModificada("coleção");
+                if (versao != _versao)
+                    ThrowHelper.ColecaoModificada();
 
                 yield return aux.Item;
             }
@@ -1284,32 +1320,32 @@ namespace AED
         }
 #nullable disable
 
-        public bool EstaVazio() => _primeira == _ultima;
+        public bool EstaVazio => _primeira == _ultima;
 
-        public void Adiciona(TChave key, TValor value)
+        public void Adiciona(TChave chave, TValor valor)
         {
             //percorrer todo o dicionário para verificar se a chave passada como argumento já existe
             var aux = _primeira.Prox;
             while (aux != null)
             {
-                if (EqualityComparer<TChave>.Default.Equals(aux.Chave, key))
-                    ThrowHelper.ChaveDuplicada(key);
+                if (EqualityComparer<TChave>.Default.Equals(aux.Chave, chave))
+                    ThrowHelper.ChaveDuplicada(chave);
 
                 aux = aux.Prox;
             }
             // Se chegou aqui, é porque a chave não existe
-            _ultima.Prox = new CCelulaDic<TChave, TValor>(key, value);
+            _ultima.Prox = new CCelulaDic<TChave, TValor>(chave, valor);
             _ultima = _ultima.Prox;
             _quantidade++;
             _versao++;
         }
 
-        public bool Remove(TChave key)
+        public bool Remove(TChave chave)
         {
             CCelulaDic<TChave, TValor> aux = _primeira;
             while (aux.Prox != null)
             {
-                if (EqualityComparer<TChave>.Default.Equals(aux.Prox.Chave, key))
+                if (EqualityComparer<TChave>.Default.Equals(aux.Prox.Chave, chave))
                 {
                     aux.Prox = aux.Prox.Prox;
                     if (aux.Prox == null)
@@ -1323,17 +1359,17 @@ namespace AED
             return false;
         }
 
-        public TValor RetornaValor(TChave key)
+        public TValor RetornaValor(TChave chave)
         {
             CCelulaDic<TChave, TValor> aux = _primeira.Prox;
             while (aux != null)
             {
-                if (EqualityComparer<TChave>.Default.Equals(aux.Chave, key))
+                if (EqualityComparer<TChave>.Default.Equals(aux.Chave, chave))
                     return aux.Valor;
                 aux = aux.Prox;
             }
             //se percorreu todo o loop, é porque a chave passada por parâmetro não foi encontrada
-            ThrowHelper.ChaveNaoEncontrada(key);
+            ThrowHelper.ChaveNaoEncontrada(chave);
             return default;
         }
 
@@ -1383,25 +1419,25 @@ namespace AED
 
         public int Quantidade => _quantidade;
 
-        public bool ContemChave(TChave key)
+        public bool ContemChave(TChave chave)
         {
             CCelulaDic<TChave, TValor> aux = _primeira.Prox;
             bool achou = false;
             while (aux != null && !achou)
             {
-                achou = EqualityComparer<TChave>.Default.Equals(aux.Chave, key);
+                achou = EqualityComparer<TChave>.Default.Equals(aux.Chave, chave);
                 aux = aux.Prox;
             }
             return achou;
         }
 
-        public bool ContemValor(TValor value)
+        public bool ContemValor(TValor valor)
         {
             CCelulaDic<TChave, TValor> aux = _primeira.Prox;
             bool achou = false;
             while (aux != null && !achou)
             {
-                achou = EqualityComparer<TValor>.Default.Equals(aux.Valor, value);
+                achou = EqualityComparer<TValor>.Default.Equals(aux.Valor, valor);
                 aux = aux.Prox;
             }
             return achou;
@@ -1441,13 +1477,31 @@ namespace AED
             _versao++;
         }
 
+#nullable restore
+        public static CDicionario<TChave, TValor> ConcatenaDicionario(CDicionario<TChave, TValor> d1, CDicionario<TChave, TValor> d2)
+        {
+            if (d1 == null)
+                ThrowHelper.ColecaoNula(nameof(d1));
+            if (d2 == null)
+                ThrowHelper.ColecaoNula(nameof(d2));
+
+            CDicionario<TChave, TValor> concatenado = new CDicionario<TChave, TValor>();
+            foreach (CPar<TChave, TValor> par in d1)
+                concatenado.Adiciona(par.Chave, par.Valor);
+            foreach (CPar<TChave, TValor> par in d2)
+                concatenado.Adiciona(par.Chave, par.Valor);
+
+            return concatenado;
+        }
+#nullable disable
+
         public IEnumerator<CPar<TChave, TValor>> GetEnumerator()
         {
             uint versao = _versao;
             for (CCelulaDic<TChave, TValor> aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
                 if (versao != _versao)
-                    ThrowHelper.ColecaoModificada("coleção");
+                    ThrowHelper.ColecaoModificada();
 
                 yield return new CPar<TChave, TValor>(aux.Chave, aux.Valor);
             }
@@ -1463,7 +1517,7 @@ namespace AED
             for (CCelulaDic<TChave, TValor> aux = _primeira.Prox; aux != null; aux = aux.Prox)
             {
                 if (versao != _versao)
-                    ThrowHelper.ColecaoModificada("coleção");
+                    ThrowHelper.ColecaoModificada();
 
                 yield return new KeyValuePair<TChave, TValor>(aux.Chave, aux.Valor);
             }
@@ -1510,8 +1564,8 @@ namespace AED
             throw new KeyNotFoundException($"A chave '{chave}' não foi encontrada no dicionário.");
 
         ///<summary>Lança uma exceção para coleções modificadas durante loops foreach</summary>
-        internal static void ColecaoModificada(string nomeColecao) =>
-            throw new InvalidOperationException($"A {nomeColecao} foi modificada. Operação de enumeração cancelada.");
+        internal static void ColecaoModificada() =>
+            throw new InvalidOperationException("A coleção foi modificada. Operação de enumeração cancelada.");
 
         ///<summary>Lança uma exceção quando se tenta copiar coleções nulas.</summary>
         [DoesNotReturn]

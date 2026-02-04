@@ -1,50 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using AED;
 
 class Program
 {
     static void Main()
     {
-        CDeque<int> deque = new CDeque<int>();
-        CDeque<int> d2 = new CDeque<int>();
-        Console.WriteLine("Escolha uma opção:");
-        Console.WriteLine("1: Adicionar do lado direito.");
-        Console.WriteLine("2: Adicionar do lado esquerdo.");
-        Console.WriteLine("3: Remover e retornar esquerdo");
-        Console.WriteLine("4: Remover e retornar direito");
-        Console.WriteLine("0: Sair.");
-        bool rodando = true;
-        while (rodando)
-        {
-            int opcao = int.Parse(Console.ReadLine());
-            switch (opcao)
-            {
-                case 1:
-                    deque.AdicionaDireito(int.Parse(Console.ReadLine()));
-                    break;
-                case 2:
-                    deque.AdicionaEsquerdo(int.Parse(Console.ReadLine()));
-                    break;
-                case 3:
-                    d2.AdicionaDireito(int.Parse(Console.ReadLine()));
-                    break;
-                case 4:
-                    d2.AdicionaEsquerdo(int.Parse(Console.ReadLine()));
-                    break;
-                case 0:
-                    rodando = false;
-                    break;
-            }
-        }
-        Console.WriteLine("Iterando sobre o deque concatenado:");
-        CDeque<int> concatenado = CDeque<int>.ConcatenaDeque(deque, d2);
-        foreach(int n in concatenado)
-            Console.Write($"{n}, ");
+        CDicionario<int, string> dicionario = new CDicionario<int, string>();
+        Console.WriteLine("Escreve 10 nomes");
+        for(int i = 1; i <= 10; i++)
+            dicionario.Adiciona(i, Console.ReadLine());
 
-        Console.WriteLine();
-        Console.WriteLine("Iterando inversamente sobre o deque concatenado:");
-        foreach(int n in concatenado.EnumerarReverso())
-            Console.Write($"{n}, ");
+        CDicionario<int, string> dicionario2 = new CDicionario<int, string>();
+        Console.WriteLine("Escreve mais 10 nomes");
+        for(int i = 11; i <= 20; i++)
+            dicionario2.Adiciona(i, Console.ReadLine());
+
+        CDicionario<int, string> concatenado = CDicionario<int, string>.ConcatenaDicionario(dicionario, dicionario2);
+        Console.WriteLine("Iterando pela coleção concatenada:");
+        foreach(CPar<int, string> par in concatenado)
+            Console.WriteLine($"{par.Chave}: {par.Valor}");
     }
 }
