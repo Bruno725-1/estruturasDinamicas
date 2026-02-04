@@ -135,6 +135,18 @@ namespace AED
             _versao++;
         }
 
+        public T[] ParaVetor()
+        {
+            T[] vetor = new T[_quantidade];
+            CCelula<T> aux = _frente.Prox;
+            for(int i = 0; i < _quantidade; i++)
+            {
+                vetor[i] = aux.Item;
+                aux = aux.Prox;
+            }
+            return vetor;
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             uint versao = _versao;
@@ -241,6 +253,18 @@ namespace AED
 
             _quantidade = 0;
             _versao++;
+        }
+
+        public T[] ParaVetor()
+        {
+            T[] vetor = new T[_quantidade];
+            CCelula<T> aux = _topo;
+            for(int i = 0; i < _quantidade; i++)
+            {
+                vetor[i] = aux.Item;
+                aux = aux.Prox;
+            }
+            return vetor;
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -788,6 +812,29 @@ namespace AED
             _primeira = _primeira.Prox;
             _primeira.Ant = null;
             _quantidade--;
+            _versao++;
+        }
+
+        public void InsereIndice(T valorItem, int posicao)
+        {
+            if (posicao < 1 || posicao > _quantidade + 1)
+                ThrowHelper.IndiceInvalido(nameof(posicao), "maior que 0 e menor ou igual a quantidade de itens + 1");
+
+            CCelulaDup<T> aux = _primeira;
+            for(int i = 0; i < posicao - 1; i++)
+                aux = aux.Prox;
+
+            CCelulaDup<T> nova = new CCelulaDup<T>(valorItem);
+            // Encadeamento para frente
+            nova.Prox = aux.Prox;
+            nova.Ant = aux;
+            if(aux.Prox != null) // Se não for inserção no fim
+                aux.Prox.Ant = nova;
+            else
+                _ultima = nova;
+
+            aux.Prox = nova;
+            _quantidade++;
             _versao++;
         }
 
